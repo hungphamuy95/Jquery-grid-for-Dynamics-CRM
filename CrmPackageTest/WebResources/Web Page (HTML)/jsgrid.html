@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <style>
+        html {
+            font-size: 8px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #grid {
+            border: none;
+        }
+    </style>
+    <title></title>
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.2.621/styles/kendo.common-office365.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.2.621/styles/kendo.office365.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.2.621/styles/kendo.office365.mobile.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <script src="ClientGlobalContext.js.aspx"></script>
+    <script src="https://kendo.cdn.telerik.com/2017.2.621/js/jquery.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2017.2.621/js/kendo.all.min.js"></script>
+</head>
+<body>
+
+
+    <div id="example">
+        <div class="row">
+            <div class="col-lg-6">
+            <div class="btn btn-default" id="addtolist">Add to list</div><br />
+            <div id="gridone"></div></div>
+            <div class="col-lg-6">
+                <div class="btn btn-danger">Remove</div>
+                <div id="gridtwo"></div>
+            </div>
+        </div>
+
+
+    </div>
+    <script>
+        var tempdata;
+        function _getContext() {
+            var errorMessage = "Context is not available.";
+            if (typeof GetGlobalContext != "undefined")
+            { return GetGlobalContext(); }
+            else
+            {
+                if (typeof Xrm != "undefined") {
+                    return Xrm.Page.data.entity;
+                }
+                else { throw new Error(errorMessage); }
+            }
+        }
+
+        function getData(type,url,fetchxml,callback,data) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+               
+                callback(this.responseText);
+            }
+            xhttp.open(type, url + fetchxml, true);
+            console.log(url + fetchxml);
+            xhttp.setRequestHeader("OData-MaxVersion", "4.0");
+            xhttp.setRequestHeader("OData-Version", "4.0");
+            xhttp.setRequestHeader("Accept", "application/json");
+            xhttp.setRequestHeader("Content-Type", "application/json; odata.metadata=minimal");
+            xhttp.setRequestHeader("Prefer", "odata.include-annotations=OData.Community.Display.V1.FormattedValue");
+            xhttp.setRequestHeader("Prefer", "odata.include-annotations=*");
+            if (data != undefined) {
+                xhttp.send(data);
+            }
+            xhttp.send();
+            return xhttp.onreadystatechange();
+        }
+
+        function onChange() {
+            tempdata = this.selectedKeyNames();
+            console.log(tempdata);
+        }
+
+        function getDataAfterSelection(e) {
+            
+            return dataArr;
+        }
+
+        function bindingDataGridOne(responsetext) {
+            try{
+                var originaldata = JSON.parse(responsetext);
+                console.log(originaldata);
+                var contacts = [{ "@odata.etag": "W/\"488156\"", "fullname": "Yvonne McKay (sample)", "telephone1": "555-0100", "contactid": "1d304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"488162\"", "fullname": "Susanna Stubberod (sample)", "telephone1": "555-0101", "contactid": "1f304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"506598\"", "fullname": "Nancy Anderson (sample)", "telephone1": "555-0102", "contactid": "21304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"574870\"", "fullname": "Maria Campbell (sample)", "telephone1": "555-0103", "contactid": "23304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"488180\"", "fullname": "Sidney Higa (sample)", "telephone1": "555-0104", "contactid": "25304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"488186\"", "fullname": "Scott Konersmann (sample)", "telephone1": "555-0105", "contactid": "27304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"488193\"", "fullname": "Robert Lyon (sample)", "telephone1": "555-0106", "contactid": "29304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"488199\"", "fullname": "Paul Cannon (sample)", "telephone1": "555-0107", "contactid": "2b304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"506753\"", "fullname": "Rene Valdes (sample)", "telephone1": "555-0108", "contactid": "2d304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"488211\"", "fullname": "Jim Glynn (sample)", "telephone1": "555-0109", "contactid": "2f304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"488217\"", "fullname": "Patrick Sands (sample)", "telephone1": "555-0110", "contactid": "31304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"506754\"", "fullname": "Susan Burk (sample)", "telephone1": "555-0111", "contactid": "33304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"488229\"", "fullname": "Thomas Andersen (sample)", "telephone1": "555-0112", "contactid": "35304087-f156-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"502624\"", "fullname": "Ngoam Tran", "contactid": "eaed63b4-c05f-e711-80c6-00155d0aa93d" }, { "@odata.etag": "W/\"572712\"", "fullname": "Peter Houston (sample)", "telephone1": "555-0156", "contactid": "bd32866b-5065-e711-80c8-00155d0aa93d" }, { "@odata.etag": "W/\"573506\"", "fullname": "Maria Campbell (sample)", "telephone1": "555-0165", "contactid": "b89e0a7e-7767-e711-80c8-00155d0aa93d" }, { "@odata.etag": "W/\"573586\"", "fullname": "Lidman Anna (sample)", "telephone1": "555-0173", "contactid": "16bff2a2-7767-e711-80c8-00155d0aa93d" }, { "@odata.etag": "W/\"573786\"", "fullname": "Debra Garcia (sample)", "telephone1": "555-0159", "contactid": "7b6d258e-7867-e711-80c8-00155d0aa93d" }, { "@odata.etag": "W/\"573865\"", "fullname": "Yvonne McKay (sample)", "telephone1": "555-0146", "contactid": "9311dd27-7967-e711-80c8-00155d0aa93d" }, { "@odata.etag": "W/\"573945\"", "fullname": "Susanna Stubberod (sample)", "telephone1": "555-0127", "contactid": "c58d43a8-7967-e711-80c8-00155d0aa93d" }, { "@odata.etag": "W/\"574287\"", "fullname": "Nancy Anderson (sample)", "telephone1": "555-0134", "contactid": "753e6526-4368-e711-80c8-00155d0aa93d" }, { "@odata.etag": "W/\"575194\"", "fullname": "test test", "contactid": "2c853063-787d-e711-80c8-00155d0aa93d" }];
+                console.log(contacts);
+                $("#gridone").kendoGrid({
+                    dataSource: {
+                        data: contacts,
+                        schema: {
+
+                            model: {
+                                id: "contactid",
+                                fields: {
+                                    fullname: { type: "string" },
+                                    telephone1: { type: "string" }
+                                }
+                            }
+                        }
+                    },
+                    pageable: false,
+                    scrollable: false,
+                    persistSelection: true,
+                    sortable: true,
+                    change: onChange,
+                    columns: [
+                        { selectable: true, width: "50px" },
+                        { field: "fullname", title: "Product Name" },
+                        { field: "telephone1", title: "Unit Price" }]
+                });
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }
+        //function bindingDataGridTwo() {
+        //    $("#gridtwo").kendoGrid({
+        //        dataSource: {
+        //            pageSize: 10,
+        //            data: contacts,
+        //            schema: {
+        //                model: {
+        //                    id: "contactid",
+        //                    fields: {
+        //                        fullname: { type: "string" },
+        //                        telephone1: { type: "string" }
+        //                    }
+        //                }
+        //            },
+        //        },
+        //        pageable: {
+        //            input: true,
+        //            numeric: false
+        //        },
+        //        scrollable: false,
+        //        persistSelection: true,
+        //        sortable: true,
+        //        change: onChange,
+        //        columns: [
+        //            { selectable: true, width: "50px" },
+        //            { field: "fullname", title: "Name", format: "{0:c}", width: "130px" },
+        //            { field: "telephone1", title: "Phone", width: "130px" }
+        //        ]
+        //    });
+        //}
+        $(document).ready(function () {
+            var fxml = ["<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>" +
+                    "<entity name='contact'>" +
+                    "<attribute name='fullname'/>" +
+                    "<attribute name='telephone1'/>" +
+                    "<condition attribute='parentaccountid' operator='eq' value='{0}' uiname='' uitype=''/>"+
+                    "</filter>"+
+                "</entity>" +
+            "</fetch>"].join("");
+            var encodefxml = escape(fxml);
+            getData("GET", "http://172.22.22.94/ciberdemo/api/data/v8.0/contacts?fetchXml=", encodefxml, bindingDataGridOne);
+            function test(){}
+            $("#addtolist").click(function () {
+                //for (var i = 0; i < tempdata.length; i++) {
+                //    console.log(_getContext());
+                //    var passdata = {
+                //        "entityid": tempdata[i],
+                //        "listid": Xrm.Page.data.entity.getId()
+                //    }
+                //    console.log(passdata);
+                //    getData("POST", "http://172.22.22.94/ciberdemo/api/data/v8.0/listmembers", "", test, passdata)
+                //}
+                
+                console.log(tempdata);
+            });
+            
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,478 @@
+﻿<html>
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="ClientGlobalContext.js.aspx" type="text/javascript"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .table {
+            font-size: 12px;
+            font-family: Segoe\000020UI,Arial,sans\00002Dserif;
+            border-top: 1px solid #c3c3c3;
+        }
+
+        .table-hover > thead > tr > td:hover, .table-hover > tbody > tr > td:hover {
+            background-color: #d7ebf9 !important;
+        }
+
+        .table-hover > thead > tr:hover > td, .table-hover > tbody > tr:hover > th {
+            background-color: inherit;
+        }
+
+        .table thead td {
+            border-top: 1px solid #c3c3c3;
+            border-left: 1px dashed #000;
+            border-right: 1px dashed #000;
+            border-color: #c3c3c3;
+            border-width: 1px;
+            border-style: double;
+            border-bottom: 1px solid #c3c3c3;
+        }
+
+        .table tbody {
+            border: none;
+        }
+
+        table td:first-child {
+            border-left: none;
+        }
+
+        table td:last-child {
+            border-right: none;
+        }
+
+        .form-control {
+            border-radius: 0px;
+        }
+
+        .a {
+            text-decoration: none;
+        }
+
+        .table > tbody > tr > td,
+        .table > tbody > tr > th {
+            border-top: none;
+        }
+
+        .btn {
+            border-radius: 0px;
+        }
+
+        .loader {
+            position: relative;
+            padding-top: 100px;
+            width: 40px;
+            margin: auto;
+        }
+
+            .loader .circle {
+                position: absolute;
+                width: 38px;
+                height: 38px;
+                opacity: 0;
+                transform: rotate(225deg);
+                animation-iteration-count: infinite;
+                animation-name: orbit;
+                animation-duration: 5.5s;
+            }
+
+                .loader .circle:after {
+                    content: '';
+                    position: absolute;
+                    width: 5px;
+                    height: 5px;
+                    border-radius: 5px;
+                    background: #000;
+                    /* Pick a color */
+                }
+
+                .loader .circle:nth-child(2) {
+                    animation-delay: 240ms;
+                }
+
+                .loader .circle:nth-child(3) {
+                    animation-delay: 480ms;
+                }
+
+                .loader .circle:nth-child(4) {
+                    animation-delay: 720ms;
+                }
+
+                .loader .circle:nth-child(5) {
+                    animation-delay: 960ms;
+                }
+
+        @keyframes orbit {
+            0% {
+                transform: rotate(225deg);
+                opacity: 1;
+                animation-timing-function: ease-out;
+            }
+
+            7% {
+                transform: rotate(345deg);
+                animation-timing-function: linear;
+            }
+
+            30% {
+                transform: rotate(455deg);
+                animation-timing-function: ease-in-out;
+            }
+
+            39% {
+                transform: rotate(690deg);
+                animation-timing-function: linear;
+            }
+
+            70% {
+                transform: rotate(815deg);
+                opacity: 1;
+                animation-timing-function: ease-out;
+            }
+
+            75% {
+                transform: rotate(945deg);
+                animation-timing-function: ease-out;
+            }
+
+            76% {
+                transform: rotate(945deg);
+                opacity: 0;
+            }
+
+            100% {
+                transform: rotate(945deg);
+                opacity: 0;
+            }
+        }
+    </style>
+    <meta>
+</head>
+<body style="word-wrap: break-word;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <select class="form-control" id="sel1" onchange="reloadGridSelected()"></select>
+                    </div>
+                </div>
+                <div class="con-xs-2"><button class="btn btn-default" id="show">Add Members</button></div>
+                <div class="con-xs-4">
+                    <input type="text" class="form-control" id="txtsearch"/>
+                    <button class="btn btn-default" id="btnsearch">Search</button>
+                </div>
+                <br />
+                <div id="loading" class='loader'>
+                    <div class='circle'></div>
+                    <div class='circle'></div>
+                    <div class='circle'></div>
+                    <div class='circle'></div>
+                    <div class='circle'></div>
+                </div>
+                <table class="table table-hover" id="grid">
+                    <thead id="maintable">
+                        <tr>
+                            <td><input class="checkBox" type="checkbox" id="checkall"></td>
+                            <td><a href="#">Full Name</a></td>
+                            <td><a href="#">Telephone</a></td>
+                        </tr>
+                    </thead>
+                    <tbody id="append"></tbody>
+                </table>
+                <div id="notice" style="align-content:center;font-family:Segoe\000020UI,Arial,sans\00002Dserif; font-size:12px;">No Contact records are available in this view.</div>
+                <div class="col-lg-9">&nbsp;</div>
+                <div class="col-lg-3"><button id="previous"><span class="glyphicon glyphicon-chevron-left" style="color:#0072c6; font-size:10px;"></span></button><span style="font-size:12px;" id="getpage"></span><button id="next"><span class="glyphicon glyphicon-chevron-right" style="color:#0072c6; font-size:10px;"></span></button></div>
+
+            </div>
+            <div class="col-lg-6">
+                <table class="table table-hover" id="listmember">
+                    <thead id="mainlistmembertable">
+                        <tr>
+                            <td><input class="checkBox" type="checkbox" id="checkallmember"></td>
+                            <td><a href="#">Full Name</a></td>
+                            <td><a href="#">Telephone</a></td>
+                        </tr>
+                    </thead>
+                    <tbody id="listmemberbody"></tbody>
+                </table>
+                <div id="noticelistmember" style="align-content:center;font-family:Segoe\000020UI,Arial,sans\00002Dserif; font-size:12px;">No Contact records are available in this view.</div>
+                <div class="col-lg-9">&nbsp;</div>
+                <div class="col-lg-3"><button id="previouslistmember"><span class="glyphicon glyphicon-chevron-left" style="color:#0072c6; font-size:10px;"></span></button><span style="font-size:12px;" id="getpagelistmember"></span><button id="nextlistmember"><span class="glyphicon glyphicon-chevron-right" style="color:#0072c6; font-size:10px;"></span></button></div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        var arrDat = [];
+        var currentpage = 1;
+        var globalFetchXml;
+        var xml_special_to_escaped_one_map = {
+            '&': '&amp;',
+            '"': '&quot;',
+            '<': '&lt;',
+            '>': '&gt;'
+        };
+        var escaped_one_to_xml_special_map = {
+            '&amp;': '&',
+            '&quot;': '"',
+            '&lt;': '<',
+            '&gt;': '>'
+        };
+
+        function encodeXml(string) {
+            return string.replace(/([\&"<>])/g, function (str, item) {
+                return xml_special_to_escaped_one_map[item];
+            });
+        };
+
+        function decodeXml(string) {
+            return string.replace(/(&quot;|&lt;|&gt;|&amp;)/g,
+                function (str, item) {
+                    return escaped_one_to_xml_special_map[item];
+                });
+        }
+
+        function getData(url, fetchXml, callback) {
+            console.log("get view function");
+            var encodedFetchXml = encodeURI(fetchXml);
+            var queryPath = url + encodedFetchXml;
+            var requestPath = window.parent.Xrm.Page.context.getClientUrl() + queryPath;
+            var req = new XMLHttpRequest();
+            req.open("GET", requestPath, true);
+            req.setRequestHeader("OData-MaxVersion", "4.0");
+            req.setRequestHeader("OData-Version", "4.0");
+            req.setRequestHeader("Accept", "application/json");
+            req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+            req.onreadystatechange = function () {
+                if (this.readyState === 4) {
+                    this.onreadystatechange = null;
+                    if (this.status === 200) {
+                        var returned = JSON.parse(this.responseText);
+                        var results = returned.value;
+                        callback(results);
+                        // console.log(results);
+                        $('#loading').hide();
+                        $('#grid').show();
+                    }
+                    else {
+                        alert(this.statusText);
+                    }
+                }
+            };
+            req.send();
+        }
+
+        //working here
+        function reloadGridSelected(result) {
+            var x = document.getElementById('sel1').value;
+            globalFetchXml = decodeXml(x);            
+            globalFetchXml = PrepareFetchXml(globalFetchXml, "", "", "", 1);
+            console.log(globalFetchXml);
+        }
+
+        function filterViewByContact(input) {
+            var arrParse = [];
+            for (var i = 0; i < input.length; i++) {
+                //console.log(input[i].fetchxml);
+                if (input[i].fetchxml.toString().includes("<entity name=\"contact\">") == true) {
+                    arrParse.push(input[i]);
+                }
+            }
+            return arrParse;
+        }
+
+        function getViewSelector(results) {
+            console.log(JSON.stringify(results));
+            for (var i = 0; i < results.length; i++) {
+
+                //console.log(filterViewByContact(results)[i].name);
+                var Name = results[i].name;
+                console.log(i + Name);
+                if (Name == "My Active Contacts") {
+                    $("#sel1").append('<option value="' + encodeXml(results[i].fetchxml) + '" selected="selected"><span style="font-family:Segoe\000020UI,Arial,sans\00002Dserif">' + Name + '</span></option>');
+                } else {
+                    $("#sel1").append('<option value="' + encodeXml(results[i].fetchxml) + '"><span style="font-family:Segoe\000020UI,Arial,sans\00002Dserif">' + Name + '</span></option>');
+                }
+
+            }
+        }
+
+        function checkDataIsUndefinded(data) {
+            return (data === undefined) ? "" : data;
+        }
+
+        
+
+        function excutionQuery(page)
+        {
+            debugger;
+            var keyword = $("#txtsearch").val();
+            var fetchxml = PrepareFetchXml(globalFetchXml, keyword, "", "", page);
+            $('#append').empty();
+            getData("/api/data/v8.0/contacts?fetchXml=", fetchxml, bindingData);
+            $('#getpage').empty();
+            $('#getpage').append(' page ' + page + ' ');
+            $('#next').attr('disabled', true);
+        }
+
+        function bindingData(responsetext) {
+            if (responsetext.length === 0) {
+                console.log("the length of array is 0");
+                currentpage -= 1;
+                excutionQuery(currentpage);
+                //$('#next').attr('disabled', true);
+            }
+            else {
+                console.log("the length of array is not 0");
+                $('#notice').hide();
+                $('#next').attr('disabled', false);
+            }
+
+            for (var i = 0; i < responsetext.length; i++) {
+                $('#append').append('<tr id="' + responsetext[i].contactid + '"><td><input ' + 'class="' + 'checkBox" onclick="return OptionsSelected(this)" ' + checkboxIsChecked(responsetext[i].contactid) + ' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox"/></td><td>' + checkDataIsUndefinded(responsetext[i].fullname) + '</td><td>' + checkDataIsUndefinded(responsetext[i].telephone1) + '</td></tr>');
+            }
+        }
+
+        function OptionsSelected(me) {
+            if (me.checked == true) {
+                arrDat.push(me.id);
+                console.log(arrDat);
+            } else if (me.checked == false) {
+                for (var i in arrDat) {
+                    if (arrDat[i] == me.id) {
+                        arrDat.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        }
+
+        function PrepareFetchXml(fetchXml, keyword, orderColumn, orderType, page) {
+            var serializer = new XMLSerializer();
+            var xmlDoc = $.parseXML(fetchXml);
+            var $xml = $(xmlDoc);
+
+            if (page !== "") {
+                var $fetch = $xml.find("fetch");
+                $fetch.attr("count", 5);
+                $fetch.attr("page", page);
+            }
+
+            var columns = ["fullname","telephone1"];               
+            if (columns.length > 0) {
+                var $columns = $xml.find("attribute");
+                $columns.each(function () {
+                    $(this).remove();
+                });
+
+                var attribute = "<attribute name=\"{columnName}\" />";
+                $.each(columns, function (i, val) {
+                    $xml.find("entity").append(attribute.replace("{columnName}", val));
+                });
+            }
+
+            if (keyword !== "") {
+                var $filter = $xml.find("filter");
+                var condition = "<condition attribute=\"fullname\" operator=\"like\" value=\"%{keyword}%\" />";
+                condition = condition.replace("{keyword}", keyword);
+                $filter.append(condition);
+            }
+
+            if (orderColumn !== "") {
+                var $order = $xml.find("order");
+                $order.each(function () {
+                    $(this).remove();
+                });
+
+                var sort = "<order attribute=\"{column}\" descending=\"{orderType}\" />";
+                sort = sort.replace("{column}", orderColumn).replace("{orderType}", orderType);
+                $xml.find("entity").append(sort);
+            }
+
+            return serializer.serializeToString(xmlDoc);
+        }
+
+        function checkboxIsChecked(id) {
+            return (arrDat.includes(id) == true) ? "checked" : "";
+        }
+        /*
+        *-----------------------------------------------------------
+        */
+
+        $(document).ready(function () {
+            
+            $('#notice').hide();
+            $('#previous').attr('disabled', true);
+            $('#getpage').append(' page 1 ');
+            $('#grid').hide();
+
+            var systemviewxml = "<fetch version=\"1.0\" output-format=\"xml-platform\" mapping=\"logical\" distinct=\"false\">" +
+            "<entity name=\"savedquery\">" +
+            "<attribute name=\"name\" />" +
+            "<attribute name=\"fetchxml\" />" +
+            "<order attribute=\"name\" descending=\"false\" />" +
+            "<filter>" +
+            "<condition attribute=\"fetchxml\" operator=\"not-null\" />"+
+            "<condition attribute=\"returnedtypecode\" operator=\"eq\" value=\"2\" />" +
+            "</filter>" +
+            "</entity>" +
+            "</fetch>";
+            var fetxml = "<fetch version=\"1.0\"  output-format=\"xml-platform\" mapping=\"logical\" distinct=\"false\">" +
+           "<entity name=\"userquery\">" +
+           "<attribute name=\"name\" />" +
+           "<attribute name=\"fetchxml\" />" +
+           "<order attribute=\"name\" descending=\"false\" />" +
+           "<filter>" +
+           "<condition attribute=\"returnedtypecode\" operator=\"eq\" value=\"2\" />" +
+           "<condition attribute=\"ownerid\" operator=\"eq\" value=\"" + window.parent.Xrm.Page.context.getUserId() + "\" />" +
+           "</filter>" +
+           "</entity>" +
+           "</fetch>";
+            getData("/api/data/v8.0/savedqueries?fetchXml=", systemviewxml, getViewSelector);
+            getData("/api/data/v8.0/userqueries?fetchXml=", fetxml, getViewSelector);
+            
+        });
+        $('#show').click(function () {
+            console.log(arrDat);
+        });
+        var currentpage = 1;
+        $("#next").click(function () {
+            $('#previous').attr('disabled', false);
+            currentpage += 1;
+            excutionQuery(currentpage);
+        });
+        $('#previous').click(function () {
+            currentpage -= 1;
+            $('#previous').attr('disabled', false);
+            if (currentpage >= 1) {                          
+                excutionQuery(currentpage);
+                $('#previous').attr('disabled', false);
+            }
+            else if (currentpage < 1) {
+                currentpage = 1;
+                $('#previous').attr('disabled', true);
+            }
+
+        });
+        $('#sel1').change(function () {
+            currentpage = 1;
+            $('#append').empty();
+            excutionQuery(currentpage);
+        });
+        $('#btnsearch').click(function () {
+            currentpage = 1;
+            excutionQuery(currentpage);
+        });
+    </script>
+
+</body>
+</html>
