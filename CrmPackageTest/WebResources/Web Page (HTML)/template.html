@@ -165,7 +165,7 @@
                         <select class="form-control" id="sel1" onchange="reloadGridSelected()"></select>
                     </div>
                 </div>
-                <div class="con-xs-2"><button class="btn btn-default" id="show">Add Members</button></div>
+                <div class="con-xs-2"><button class="btn btn-default" id="btnaddmember">Add Members</button></div>
                 <div class="con-xs-4">
                     <input type="text" class="form-control" id="txtsearch" />
                     <button class="btn btn-default" id="btnsearch">Search</button>
@@ -234,6 +234,128 @@
             });
         };
 
+        function removeMemberList() {
+            if (typeof (SDK) == "undefined")
+            { SDK = { __namespace: true }; }
+            //This will establish a more unique namespace for functions in this library. This will reduce the
+            // potential for functions to be overwritten due to a duplicate name when the library is loaded.
+            SDK.SAMPLES = {
+                _getServerUrl: function () {
+                    ///<summary>
+                    /// Returns the URL for the SOAP endpoint using the context information available in the form
+                    /// or HTML Web resource.
+                    ///</summary>
+                    var OrgServicePath = "/XRMServices/2011/Organization.svc/web";
+                    var serverUrl = "";
+                    if (typeof GetGlobalContext == "function") {
+                        serverUrl = window.parent.Xrm.Page.context.getClientUrl();
+                    }
+                    else {
+                        if (typeof Xrm.Page.context == "object") {
+                            serverUrl = Xrm.Page.context.getServerUrl();
+                        }
+                        else { throw new Error("Unable to access the server URL"); }
+                    }
+                    if (serverUrl.match(/\/$/)) {
+                        serverUrl = serverUrl.substring(0, serverUrl.length - 1);
+                    }
+                    return serverUrl + OrgServicePath;
+                },
+                RemoveMemberListRequest: function (listId, entityId) {
+                    var requestMain = ""
+                    requestMain += "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">";
+                    requestMain += "  <s:Body>";
+                    requestMain += "    <Execute xmlns=\"http://schemas.microsoft.com/xrm/2011/Contracts/Services\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">";
+                    requestMain += "      <request i:type=\"b:RemoveMemberListRequest\" xmlns:a=\"http://schemas.microsoft.com/xrm/2011/Contracts\" xmlns:b=\"http://schemas.microsoft.com/crm/2011/Contracts\">";
+                    requestMain += "        <a:Parameters xmlns:c=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\">";
+                    requestMain += "          <a:KeyValuePairOfstringanyType>";
+                    requestMain += "            <c:key>ListId</c:key>";
+                    requestMain += "            <c:value i:type=\"d:guid\" xmlns:d=\"http://schemas.microsoft.com/2003/10/Serialization/\">" + listId + "</c:value>";
+                    requestMain += "          </a:KeyValuePairOfstringanyType>";
+                    requestMain += "          <a:KeyValuePairOfstringanyType>";
+                    requestMain += "            <c:key>EntityId</c:key>";
+                    requestMain += "            <c:value i:type=\"d:guid\" xmlns:d=\"http://schemas.microsoft.com/2003/10/Serialization/\">" + entityId + "</c:value>";
+                    requestMain += "          </a:KeyValuePairOfstringanyType>";
+                    requestMain += "        </a:Parameters>";
+                    requestMain += "        <a:RequestId i:nil=\"true\" />";
+                    requestMain += "        <a:RequestName>RemoveMemberList</a:RequestName>";
+                    requestMain += "      </request>";
+                    requestMain += "    </Execute>";
+                    requestMain += "  </s:Body>";
+                    requestMain += "</s:Envelope>";
+                    var req = new XMLHttpRequest();
+                    req.open("POST", SDK.SAMPLES._getServerUrl(), true);
+                    // Responses will return XML. It isn't possible to return JSON.
+                    req.setRequestHeader("Accept", "application/xml, text/xml, */*");
+                    req.setRequestHeader("Content-Type", "text/xml; charset=utf-8");
+                    req.setRequestHeader("SOAPAction", "http://schemas.microsoft.com/xrm/2011/Contracts/Services/IOrganizationService/Execute");
+                    var successCallback = null;
+                    var errorCallback = null;
+                    req.onreadystatechange = function () { SDK.SAMPLES.RemoveMemberListResponse(req, successCallback, errorCallback); };
+                    req.send(requestMain);
+                },
+                RemoveMemberListResponse: function (req, successCallback, errorCallback) {
+                    ///<summary>
+                    /// Recieves the assign response
+                    ///</summary>
+                    ///<param name="req" Type="XMLHttpRequest">
+                    /// The XMLHttpRequest response
+                    ///</param>
+                    ///<param name="successCallback" Type="Function">
+                    /// The function to perform when an successfult response is returned.
+                    /// For this message no data is returned so a success callback is not really necessary.
+                    ///</param>
+                    ///<param name="errorCallback" Type="Function">
+                    /// The function to perform when an error is returned.
+                    /// This function accepts a JScript error returned by the _getError function
+                    ///</param>
+                    debugger;
+                    if (req.readyState == 4) {
+                        if (req.status == 200) {
+                            if (successCallback != null)
+                            { alert("Ahii") }
+                        }
+                        else {
+                            errorCallback(SDK.SAMPLES._getError(req.responseXML));
+                        }
+                    }
+                },
+                _getError: function (faultXml) {
+                    ///<summary>
+                    /// Parses the WCF fault returned in the event of an error.
+                    ///</summary>
+                    ///<param name="faultXml" Type="XML">
+                    /// The responseXML property of the XMLHttpRequest response.
+                    ///</param>
+                    var errorMessage = "Unknown Error (Unable to parse the fault)";
+                    if (typeof faultXml == "object") {
+                        try {
+                            var bodyNode = faultXml.firstChild.firstChild;
+                            //Retrieve the fault node
+                            for (var i = 0; i < bodyNode.childNodes.length; i++) {
+                                var node = bodyNode.childNodes[i];
+                                //NOTE: This comparison does not handle the case where the XML namespace changes
+                                if ("s:Fault" == node.nodeName) {
+                                    for (var j = 0; j < node.childNodes.length; j++) {
+                                        var faultStringNode = node.childNodes[j];
+                                        if ("faultstring" == faultStringNode.nodeName) {
+                                            errorMessage = faultStringNode.text;
+                                            alert(errorMessage);
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        catch (e) { };
+                    }
+                    return new Error(errorMessage);
+                },
+                __namespace: true
+            };
+        }
+
         function decodeXml(string) {
             return string.replace(/(&quot;|&lt;|&gt;|&amp;)/g,
                 function (str, item) {
@@ -290,6 +412,32 @@
             return arrParse;
         }
 
+        function GetMembers(page) {
+            debugger;
+            var listId = window.parent.Xrm.Page.data.entity.getId().replace("{", "").replace("}", "");
+            var fetchXml =
+                        "<fetch top=\"50\">" +
+                            "<entity name=\"listmember\">" +
+                                "<filter>" +
+                                    "<condition attribute=\"listid\" operator=\"eq\" value=\"{listId}\" />" +
+                                "</filter>" +
+                                "<link-entity name=\"contact\" from=\"contactid\" to=\"entityid\" link-type=\"inner\" alias=\"Contact\" visible=\"true\" >" +
+                                    "<attribute name=\"contactid\" alias=\"id\" />" +
+                                    "<attribute name=\"fullname\" alias=\"name\" />" +
+                                    "<attribute name=\"emailaddress1\" alias=\"email\" />" +
+                                "</link-entity>" +
+                            "</entity>" +
+                        "</fetch>";
+
+            fetchXml = fetchXml.replace("{listId}", listId);
+            //fetchXml = PrepareFetchXml(fetchXml, "", "", "", page);
+            getData("/api/data/v8.0/listmembers?fetchXml=", fetchXml, bindingDataListMember);
+            //getData("/api/data/v8.0/listmember?fetchXml=", fetchxml, bindingData);
+            $('#getpagelistmember').empty();
+            $('#getpagelistmember').append(' page ' + page + ' ');
+            $('#nextlistmember').attr('disabled', true);
+        }
+
         function getViewSelector(results) {
             console.log(JSON.stringify(results));
             for (var i = 0; i < results.length; i++) {
@@ -342,6 +490,22 @@
             }
         }
 
+        function bindingDataListMember(responsetext) {
+            debugger;
+                if (responsetext.length == 0) {
+                    currentpage = -1;
+                    $('#noticelistmember').show();
+                } else {
+                    $('#noticelistmember').hide();
+                    $('#nextlistmember').attr('disabled', false);
+                }
+
+                for (var i = 0; i < responsetext.length; i++) {
+                    $('#listmemberbody').append('<tr id="' + responsetext[i].id + '"><td><input ' + 'class="' + 'checkBox" onclick="return OptionsSelected(this)" ' + checkboxIsChecked(responsetext[i].id) + ' value="' + responsetext[i].name + '" id=' + responsetext[i].id + ' type="checkbox"/></td><td>' + checkDataIsUndefinded(responsetext[i].name) + '</td><td>' + checkDataIsUndefinded(responsetext[i].email) + '</td></tr>');
+                }
+            
+        }
+
         function OptionsSelected(me) {
             if (me.checked == true) {
                 arrDat.push(me.id);
@@ -354,6 +518,33 @@
                     }
                 }
             }
+        }
+
+        function AddMemberToList(listContactId) {
+            var listId = window.parent.Xrm.Page.data.entity.getId().replace("{", "").replace("}", "");
+            var serverURL = window.parent.Xrm.Page.context.getClientUrl();
+
+            for (var i in listContactId) {               
+                var data = {
+                    "EntityId": listContactId[i]
+                };
+                var req = new XMLHttpRequest();
+                req.open("POST", serverURL + "/api/data/v8.0/lists("+ listId +")/Microsoft.Dynamics.CRM.AddMemberList", true);
+                req.setRequestHeader("Accept", "application/json");
+                req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+                req.setRequestHeader("OData-MaxVersion", "4.0");
+                req.setRequestHeader("OData-Version", "4.0");
+                req.onreadystatechange = function () {
+                    if (this.readyState == 4 /* complete */) {
+                        req.onreadystatechange = null;
+                        if (this.status == 200) {                            
+                        } else {
+                            var error = JSON.parse(this.response).error;                            
+                        }
+                    }
+                };
+                req.send(JSON.stringify(data));
+            }                    
         }
 
         function PrepareFetchXml(fetchXml, keyword, orderColumn, orderType, page) {
@@ -443,8 +634,11 @@
             getData("/api/data/v8.0/userqueries?fetchXml=", fetxml, getViewSelector);
 
         });
-        $('#show').click(function () {
+        $('#btnaddmember').click(function () {
             console.log(arrDat);
+            debugger;
+            AddMemberToList(arrDat);
+            GetMembers(1);
         });
         var currentpage = 1;
         $("#next").click(function () {
@@ -471,9 +665,12 @@
             excutionQuery(currentpage);
         });
         $('#btnsearch').click(function () {
+            GetMembers()
             currentpage = 1;
             excutionQuery(currentpage);
         });
+
+        GetMembers(1);
     </script>
 
 </body>
