@@ -571,10 +571,11 @@
 
         });
         $('#btnaddmember').click(function () {
-            console.log(arrDat);
-            debugger;
             AddMemberToList(arrDat);
-            GetMembers(1);
+            setTimeout(function () {
+                $('#listmemberbody').empty();               
+                GetMembers(1);
+            }, 3000);            
         });
         var currentpage = 1;
         $("#next").click(function () {
