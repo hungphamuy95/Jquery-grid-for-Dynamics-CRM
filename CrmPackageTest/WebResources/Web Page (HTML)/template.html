@@ -195,11 +195,18 @@
             </div>
             <div class="col-lg-6">
                 <div class="col-xs-6">
-                    
+
                 </div>
                 <div class="con-xs-2"><button class="btn btn-danger" id="btnremove">Remove Members</button></div>
                 <div class="con-xs-4">
-                   
+
+                </div>
+                <div id="loadingmemberlist" class='loader'>
+                    <div class='circle'></div>
+                    <div class='circle'></div>
+                    <div class='circle'></div>
+                    <div class='circle'></div>
+                    <div class='circle'></div>
                 </div>
                 <table class="table table-hover" id="listmember">
                     <thead id="mainlistmembertable">
@@ -213,7 +220,7 @@
                 </table>
                 <div id="noticelistmember" style="align-content:center;font-family:Segoe\000020UI,Arial,sans\00002Dserif; font-size:12px;">No Contact records are available in this view.</div>
                 <div class="col-lg-9">&nbsp;</div>
-                <div class="col-lg-3"><button id="previouslistmember"><span class="glyphicon glyphicon-chevron-left" style="color:#0072c6; font-size:10px;"></span></button><span style="font-size:12px;" id="getpagelistmember"></span><button id="nextlistmember"><span class="glyphicon glyphicon-chevron-right" style="color:#0072c6; font-size:10px;"></span></button></div>
+                <!--<div class="col-lg-3"><button id="previouslistmember"><span class="glyphicon glyphicon-chevron-left" style="color:#0072c6; font-size:10px;"></span></button><span style="font-size:12px;" id="getpagelistmember"></span><button id="nextlistmember"><span class="glyphicon glyphicon-chevron-right" style="color:#0072c6; font-size:10px;"></span></button></div>-->
             </div>
         </div>
 
@@ -335,7 +342,7 @@
         }
 
         function GetMembers(page) {
-            debugger;
+            //debugger;
             var listId = window.parent.Xrm.Page.data.entity.getId().replace("{", "").replace("}", "");
             var fetchXml =
                         "<fetch top=\"50\">" +
@@ -384,8 +391,10 @@
 
         function excutionQuery(page)
         {
-            debugger;
+            //debugger;
             var keyword = $("#txtsearch").val();
+            if (page < 1)
+                page = 1;
             var fetchxml = PrepareFetchXml(globalFetchXml, keyword, "", "", page);
             $('#append').empty();
             getData("/api/data/v8.0/contacts?fetchXml=", fetchxml, bindingData);
@@ -406,26 +415,31 @@
                 $('#notice').hide();
                 $('#next').attr('disabled', false);
             }
-
-            for (var i = 0; i < responsetext.length; i++) {
-                $('#append').append('<tr id="' + responsetext[i].contactid + '"><td><input ' + 'class="' + 'checkBox" onclick="return OptionsSelected(this)" ' + checkboxIsChecked(responsetext[i].contactid) + ' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox"/></td><td>' + checkDataIsUndefinded(responsetext[i].fullname) + '</td><td>' + checkDataIsUndefinded(responsetext[i].telephone1) + '</td></tr>');
+            if (responsetext.length == 0) {
+                $('#notice').show();
+            } else {
+                $('#notice').hide();
+                for (var i = 0; i < responsetext.length; i++) {
+                    $('#append').append('<tr id="' + responsetext[i].contactid + '"><td><input ' + 'class="' + 'checkBox" onclick="return OptionsSelected(this)" ' + checkboxIsChecked(responsetext[i].contactid) + ' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox"/></td><td>' + checkDataIsUndefinded(responsetext[i].fullname) + '</td><td>' + checkDataIsUndefinded(responsetext[i].telephone1) + '</td></tr>');
+                }
             }
+            
         }
 
         function bindingDataListMember(responsetext) {
-            debugger;
+            //debugger;
                 if (responsetext.length == 0) {
-                    currentpage = -1;
+                    //currentpage = -1;
                     $('#noticelistmember').show();
                 } else {
                     $('#noticelistmember').hide();
-                    $('#nextlistmember').attr('disabled', false);
+                    //$('#nextlistmember').attr('disabled', false);
                 }
 
                 for (var i = 0; i < responsetext.length; i++) {
-                    $('#listmemberbody').append('<tr id="' + responsetext[i].id + '"><td><input ' + 'class="' + 'checkBox" onclick="return OptionSelectedMember(this)" ' + checkboxIsChecked(responsetext[i].id) + ' value="' + responsetext[i].name + '" id=' + responsetext[i].id + ' type="checkbox"/></td><td>' + checkDataIsUndefinded(responsetext[i].name) + '</td><td>' + checkDataIsUndefinded(responsetext[i].email) + '</td></tr>');
+                    $('#listmemberbody').append('<tr id="' + responsetext[i].id + '"><td><input ' + 'class="' + 'checkBox" onclick="return OptionSelectedMember(this)" value="' + responsetext[i].name + '" id=' + responsetext[i].id + ' type="checkbox"/></td><td>' + checkDataIsUndefinded(responsetext[i].name) + '</td><td>' + checkDataIsUndefinded(responsetext[i].email) + '</td></tr>');
                 }
-            
+
         }
 
         function OptionSelectedMember(me) {
@@ -460,7 +474,7 @@
             var listId = window.parent.Xrm.Page.data.entity.getId().replace("{", "").replace("}", "");
             var serverURL = window.parent.Xrm.Page.context.getClientUrl();
 
-            for (var i in listContactId) {               
+            for (var i in listContactId) {
                 var data = {
                     "EntityId": listContactId[i]
                 };
@@ -473,14 +487,14 @@
                 req.onreadystatechange = function () {
                     if (this.readyState == 4 /* complete */) {
                         req.onreadystatechange = null;
-                        if (this.status == 200) {                            
+                        if (this.status == 200) {
                         } else {
-                            var error = JSON.parse(this.response).error;                            
+                            var error = JSON.parse(this.response).error;
                         }
                     }
                 };
                 req.send(JSON.stringify(data));
-            }                    
+            }
         }
 
         function PrepareFetchXml(fetchXml, keyword, orderColumn, orderType, page) {
@@ -509,9 +523,15 @@
 
             if (keyword !== "") {
                 var $filter = $xml.find("filter");
-                var condition = "<condition attribute=\"fullname\" operator=\"like\" value=\"%{keyword}%\" />";
-                condition = condition.replace("{keyword}", keyword);
-                $filter.append(condition);
+                if ($filter.length === 0) {
+                    var filter = "<filter><condition attribute=\"fullname\" operator=\"like\" value=\"%{keyword}%\" /></filter>";
+                    filter = filter.replace("{keyword}", keyword);
+                    $xml.find("entity").append(filter);
+                } else {
+                    var condition = "<condition attribute=\"fullname\" operator=\"like\" value=\"%{keyword}%\" />";
+                    condition = condition.replace("{keyword}", keyword);
+                    $filter.append(condition);
+                }
             }
 
             if (orderColumn !== "") {
@@ -536,7 +556,7 @@
         */
 
         $(document).ready(function () {
-
+            $('#loadingmemberlist').hide();
             $('#notice').hide();
             $('#previous').attr('disabled', true);
             $('#getpage').append(' page 1 ');
@@ -571,11 +591,17 @@
 
         });
         $('#btnaddmember').click(function () {
-            AddMemberToList(arrDat);
-            setTimeout(function () {
-                $('#listmemberbody').empty();               
-                GetMembers(1);
-            }, 3000);            
+            $('#listmember').hide();
+            $('#loadingmemberlist').show();
+            $('#noticelistmember').hide();
+            $.when(AddMemberToList(arrDat)).then(function () {
+                setTimeout(function () {
+                    $('#listmember').show();
+                    $('#listmemberbody').empty();
+                    $('#loadingmemberlist').hide();
+                    GetMembers(1);
+                },5000);
+            });
         });
         var currentpage = 1;
         $("#next").click(function () {
@@ -607,9 +633,21 @@
             excutionQuery(currentpage);
         });
         $('#btnremove').click(function () {
+            $('#listmember').hide();
+            $('#loadingmemberlist').show();
             console.log(arrMember);
-            removeMemberList(arrMember);
-            GetMembers(1);
+
+            $.when(removeMemberList(arrMember)).then(function () {
+                setTimeout(function () {
+                    arrMember = [];
+                    //debugger;
+                    $('#listmember').show();
+                    $('#listmemberbody').empty();
+                    $('#loadingmemberlist').hide();
+                    GetMembers(1);
+                },5000);
+            });
+
         });
         GetMembers(1);
     </script>
