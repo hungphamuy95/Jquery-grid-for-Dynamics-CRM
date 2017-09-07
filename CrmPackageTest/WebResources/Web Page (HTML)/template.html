@@ -7,6 +7,8 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
+    <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" />
+
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -25,6 +27,10 @@
 
         .table-hover > thead > tr:hover > td, .table-hover > tbody > tr:hover > th {
             background-color: inherit;
+        }
+
+        .table-hover > thead > tr > th, .table-hover > tbody > tr > th, .table-hover > tfoot > tr > th, .table-hover > thead > tr > td, .table-hover > tbody > tr > td, .table-hover > tfoot > tr > td {
+            padding: 5px;
         }
 
         .table thead td {
@@ -65,6 +71,20 @@
         .btn {
             border-radius: 0px;
         }
+
+        .right-inner-addon {
+            position: relative;
+        }
+
+            .right-inner-addon input {
+                padding-right: 30px;
+            }
+
+            .right-inner-addon i {
+                position: absolute;
+                right: 0px;
+                padding: 8px 12px;
+            }
 
         .loader {
             position: relative;
@@ -153,6 +173,11 @@
                 opacity: 0;
             }
         }
+
+        .element::-webkit-input-placeholder {
+            color: blue;
+            font-family: Segoe UI,Tahoma,Arial;
+        }
     </style>
     <meta>
 </head>
@@ -162,14 +187,14 @@
             <div class="col-lg-6">
                 <div class="col-lg-12">
                     <div class="col-lg-12">
-                        <div class="input-group">
-                            <input id="txtsearch" type="text" class="form-control">
-                            <span class="input-group-addon"><buttons style="background-color:#eee" class="btn btn-def btn-xs" id="btnsearch"><i class="glyphicon glyphicon-search"></i></button></span>
+                        <div class="right-inner-addon">
+                            <i id="btnsearch" class="icon-search"></i>
+                            <input id="txtsearch" type="search" class="form-control input-sm" placeholder="Search for records">
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-12">
-                    <br />
+                    <br>
                 </div>
                 <div class="col-lg-12">
                     <div class="col-lg-6">
@@ -178,25 +203,25 @@
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <button class="btn btn-default" id="btnaddmember">Add Members</button>
+                        <button class="btn btn-success" id="btnaddmember">Add Members</button>
                     </div>
                 </div>
                 <div class="col-lg-12">
-                    <br />
+                    <br>
                 </div>
                 <div class="col-lg-12">
                     <div class="col-lg-12">
-                        <div id="loading" class='loader'>
-                            <div class='circle'></div>
-                            <div class='circle'></div>
-                            <div class='circle'></div>
-                            <div class='circle'></div>
-                            <div class='circle'></div>
+                        <div id="loading" class="loader">
+                            <div class="circle"></div>
+                            <div class="circle"></div>
+                            <div class="circle"></div>
+                            <div class="circle"></div>
+                            <div class="circle"></div>
                         </div>
                         <table class="table table-hover" id="grid">
                             <thead id="maintable">
                                 <tr>
-                                    <td><input class="checkBox" type="checkbox" id="checkall"></td>
+                                    <td><input type="checkbox" id="checkall"></td>
                                     <td><a href="#">Full Name</a></td>
                                     <td><a href="#">Telephone</a></td>
                                 </tr>
@@ -215,7 +240,7 @@
                     <button style="background-color:white; height:34px; border:none;"></button>
                 </div>
                 <div class="col-lg-12">
-                    <br />
+                    <br>
                 </div>
                 <div class="col-lg-12">
                     <button class="btn btn-danger" id="btnremove">Remove Members</button>
@@ -224,20 +249,20 @@
                     <button style="background-color:white; height:15px; border:none;"></button>
                 </div>
                 <div class="col-lg-12">
-                    <br />
+                    <br>
                 </div>
                 <div class="col-lg-12">
-                    <div id="loadingmemberlist" class='loader'>
-                        <div class='circle'></div>
-                        <div class='circle'></div>
-                        <div class='circle'></div>
-                        <div class='circle'></div>
-                        <div class='circle'></div>
+                    <div id="loadingmemberlist" class="loader">
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
                     </div>
                     <table class="table table-hover" id="listmember">
                         <thead id="mainlistmembertable">
                             <tr>
-                                <td><input class="checkBox" type="checkbox" id="checkallmember"></td>
+                                <td><input type="checkbox" id="checkallmember"></td>
                                 <td><a href="#">Full Name</a></td>
                                 <td><a href="#">Email</a></td>
                             </tr>
@@ -403,7 +428,7 @@
                 //console.log(filterViewByContact(results)[i].name);
                 var Name = results[i].name;
                 console.log(i + Name);
-                if (Name == "All Contacts") {
+                if (Name == "My Active Contacts") {
                     $("#sel1").append('<option value="' + encodeXml(results[i].fetchxml) + '" selected="selected"><span style="font-family:Segoe\000020UI,Arial,sans\00002Dserif">' + Name + '</span></option>');
                     console.log(results[i].fetchxml);
                     globalFetchXml = encodeXml(results[i].fetchxml);
@@ -436,9 +461,8 @@
         function bindingData(responsetext) {
             if (responsetext.length === 0) {
                 console.log("the length of array is 0");
-                if (currentpage > 1)
-                    currentpage -= 1;
-                excutionQuery(currentpage);
+                //currentpage -= 1; - Phuong
+                //excutionQuery(currentpage);
                 $('#notice').show();
                 //$('#next').attr('disabled', true);
             }
@@ -531,7 +555,7 @@
 
             if (page !== "") {
                 var $fetch = $xml.find("fetch");
-                $fetch.attr("count", 25);
+                $fetch.attr("count", 10);
                 $fetch.attr("page", page);
             }
 
@@ -617,8 +641,25 @@
             getData("/api/data/v8.0/savedqueries?fetchXml=", systemviewxml, getViewSelector);
             getData("/api/data/v8.0/userqueries?fetchXml=", fetxml, getViewSelector);
             currentpage = 1;
-            globalFetchXml = "<fetch version=\"1.0\" output-format=\"xml-platform\" mapping=\"logical\" distinct=\"false\"><entity name=\"contact\"><attribute name=\"fullname\" /><attribute name=\"telephone1\" /><attribute name=\"emailaddress1\" /><attribute name=\"modifiedon\" /><attribute name=\"modifiedby\" /><attribute name=\"hsbc_contactjobroleid\" /><attribute name=\"createdon\" /><attribute name=\"createdby\" /><attribute name=\"ownerid\" /><attribute name=\"mobilephone\" /><attribute name=\"hsbc_countryid\" /><attribute name=\"hsbc_previousotherposition\" /><attribute name=\"jobtitle\" /><order attribute=\"fullname\" descending=\"false\" /><attribute name=\"hsbc_relationshipstrength\" /><attribute name=\"parentcustomerid\" /><attribute name=\"hsbc_marmarking\" /><attribute name=\"contactid\" /></entity></fetch>";
-            excutionQuery(currentpage);
+            globalFetchXml = "<fetch version=\"1.0\" output-format=\"xml-platform\" mapping=\"logical\"><entity name=\"contact\"><attribute name=\"fullname\" /><order attribute=\"fullname\" descending=\"false\" /><attribute name=\"parentcustomerid\" /><filter type=\"and\"><condition attribute=\"ownerid\" operator=\"eq-userid\" /><condition attribute=\"statecode\" operator=\"eq\" value=\"0\" /></filter><attribute name=\"telephone1\" /><attribute name=\"emailaddress1\" /><attribute name=\"contactid\" /></entity></fetch>";
+            //excutionQuery(currentpage);
+            $.when(excutionQuery(currentpage)).then(function () {
+                $('#checkall').click(function () {
+
+                    $('.checkBox').prop('checked', $(this).prop('checked'));
+                    if ($('#checkall').is(':checked')) {
+                        $('.checkBox').each(function () {
+                            arrDat.includes($(this).attr('value')) == false ? arrDat.push($(this).attr('value')) : null;
+                            console.log(arrDat);
+
+                        });
+                    }
+                    else {
+                        arrDat = [];
+                        console.log(arrDat);
+                    }
+                });
+            });
         });
         $('#btnaddmember').click(function () {
             $('#listmember').hide();
@@ -703,9 +744,10 @@
                 if (!$(this).prop("checked")) {
                     $("#checkallmember").prop("checked", false);
                 }
-            });
+            })
         });
     </script>
+
 
 </body>
 </html>
