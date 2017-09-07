@@ -15,6 +15,13 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style>
+        ::-webkit-input-placeholder {
+            font-style: italic;
+            font-family: Segoe\000020UI,Tahoma,Arial;
+            font-size: 14px;
+            color: rgb(102, 102, 102);
+        }
+
         .table {
             font-size: 12px;
             font-family: Segoe\000020UI,Arial,sans\00002Dserif;
@@ -189,7 +196,7 @@
                     <div class="col-lg-12">
                         <div class="right-inner-addon">
                             <i id="btnsearch" class="icon-search"></i>
-                            <input id="txtsearch" type="search" class="form-control input-sm" placeholder="Search for records">
+                            <input id="txtsearch" type="text" class="form-control input-sm" placeholder="Search for records">
                         </div>
                     </div>
                 </div>
@@ -197,20 +204,21 @@
                     <br>
                 </div>
                 <div class="col-lg-12">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <select class="form-control" id="sel1" onchange="reloadGridSelected()"></select>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <button class="btn btn-success" id="btnaddmember">Add Members</button>
-                    </div>
-                </div>
-                <div class="col-lg-12">
                     <br>
                 </div>
+
                 <div class="col-lg-12">
                     <div class="col-lg-12">
+                        <!--<div class="col-lg-12">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <select style="border:none;" class="form-control" id="sel1" onchange="reloadGridSelected()"></select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <button class="btn btn-success" id="btnaddmember">Add Members</button>
+                            </div>
+                        </div>-->
                         <div id="loading" class="loader">
                             <div class="circle"></div>
                             <div class="circle"></div>
@@ -218,16 +226,28 @@
                             <div class="circle"></div>
                             <div class="circle"></div>
                         </div>
-                        <table class="table table-hover" id="grid">
-                            <thead id="maintable">
-                                <tr>
-                                    <td><input type="checkbox" id="checkall"></td>
-                                    <td><a href="#">Full Name</a></td>
-                                    <td><a href="#">Telephone</a></td>
-                                </tr>
-                            </thead>
-                            <tbody id="append"></tbody>
-                        </table>
+                        <div class="col-lg-8">
+                            <select style="border:none; font-weight:bold; width:250px; font-size:12px;" class="form-control" id="sel1" onchange="reloadGridSelected()"></select>
+                        </div>
+                        <div class="col-lg-4">
+                            <button style="margin-left:8px; width:127px;" class="btn btn-success" id="btnaddmember">Add Members</button>
+                        </div>
+                        <div class="col-lg-12">
+                            <button style="background-color:white; height:5px; border:none;"></button>
+                        </div>
+                        <div class="col-lg-12">
+                            <table class="table table-hover" id="grid">
+                                <thead id="maintable">
+                                    <tr>
+                                        <td><input type="checkbox" id="checkall"></td>
+                                        <td><a href="#">Full Name</a></td>
+                                        <td><a href="#">Telephone</a></td>
+                                    </tr>
+                                </thead>
+                                <tbody id="append"></tbody>
+                            </table>
+                        </div>
+
                     </div>
                     <div id="notice" style="align-content:center;font-family:Segoe\000020UI,Arial,sans\00002Dserif; font-size:12px;">No Contact records are available in this view.</div>
                     <div class="col-lg-9">&nbsp;</div>
@@ -237,16 +257,10 @@
             </div>
             <div class="col-lg-6">
                 <div class="col-lg-12">
-                    <button style="background-color:white; height:34px; border:none;"></button>
+                    <button style="background-color:white; height:30px; border:none;"></button>
                 </div>
                 <div class="col-lg-12">
                     <br>
-                </div>
-                <div class="col-lg-12">
-                    <button class="btn btn-danger" id="btnremove">Remove Members</button>
-                </div>
-                <div class="col-lg-12">
-                    <button style="background-color:white; height:15px; border:none;"></button>
                 </div>
                 <div class="col-lg-12">
                     <br>
@@ -258,6 +272,10 @@
                         <div class="circle"></div>
                         <div class="circle"></div>
                         <div class="circle"></div>
+                    </div>
+                    <button style="float:right; width:165px;" class="btn btn-danger" id="btnremove">Remove Members</button>
+                    <div class="col-lg-12">
+                        <button style="background-color:white; height:5px; border:none;"></button>
                     </div>
                     <table class="table table-hover" id="listmember">
                         <thead id="mainlistmembertable">
@@ -450,7 +468,7 @@
             var keyword = $("#txtsearch").val();
             if (page < 1)
                 page = 1;
-            var fetchxml = PrepareFetchXml(globalFetchXml, keyword, "", "", page);
+            var fetchxml = PrepareFetchXml(decodeXml(globalFetchXml), keyword, "", "", page);
             $('#append').empty();
             getData("/api/data/v8.0/contacts?fetchXml=", fetchxml, bindingData);
             $('#getpage').empty();
@@ -644,44 +662,70 @@
             globalFetchXml = "<fetch version=\"1.0\" output-format=\"xml-platform\" mapping=\"logical\"><entity name=\"contact\"><attribute name=\"fullname\" /><order attribute=\"fullname\" descending=\"false\" /><attribute name=\"parentcustomerid\" /><filter type=\"and\"><condition attribute=\"ownerid\" operator=\"eq-userid\" /><condition attribute=\"statecode\" operator=\"eq\" value=\"0\" /></filter><attribute name=\"telephone1\" /><attribute name=\"emailaddress1\" /><attribute name=\"contactid\" /></entity></fetch>";
             //excutionQuery(currentpage);
             $.when(excutionQuery(currentpage)).then(function () {
-                $('#checkall').click(function () {
+                $('#checkall').change(function () {
 
                     $('.checkBox').prop('checked', $(this).prop('checked'));
                     if ($('#checkall').is(':checked')) {
                         $('.checkBox').each(function () {
-                            arrDat.includes($(this).attr('value')) == false ? arrDat.push($(this).attr('value')) : null;
+                            arrDat.includes($(this).attr('id')) == false ? arrDat.push($(this).attr('id')) : null;
                             console.log(arrDat);
 
                         });
                     }
                     else {
-                        arrDat = [];
+                        for (var i in arrDat) {
+                            console.log(arrDat[i]);
+
+                            $('.checkBox').each(function (i) {
+                                console.log($(this).attr('id'));
+                                for (var i = 0; i < arrDat.length; i++) {
+                                    if (arrDat[i] == $(this).attr('id')) {
+                                        arrDat.splice(i, 1);
+                                    }
+                                }
+                            });
+                        }
                         console.log(arrDat);
+                    }
+                });
+                $("input[type='checkbox'].checkBox").change(function () {
+                    var a = $("input[type='checkbox'].checkBox");
+                    if (a.length == a.filter(":checked").length) {
+                        alert('all checked');
                     }
                 });
             });
         });
-        $('#btnaddmember').click(function () {
+        $('#btnaddmember').click(function (event) {
             $('#listmember').hide();
             $('#loadingmemberlist').show();
             $('#noticelistmember').hide();
-            $.when(AddMemberToList(arrDat)).then(function () {
-                setTimeout(function () {
-                    $('#listmember').show();
-                    $('#listmemberbody').empty();
-                    $('#loadingmemberlist').hide();
-                    GetMembers(1);
-                }, 5000);
-            });
+            if (arrDat.length != 0) {
+                $.when(AddMemberToList(arrDat)).then(function () {
+                    setTimeout(function () {
+                        $('#listmember').show();
+                        $('#listmemberbody').empty();
+                        $('#loadingmemberlist').hide();
+                        GetMembers(1);
+                    }, 5000);
+                });
+            }
+            else {
+                $('#listmember').show();
+                $('#loadingmemberlist').hide();
+                event.preventDefault()
+            }
         });
         var currentpage = 1;
         $("#next").click(function () {
             $('#previous').attr('disabled', false);
             currentpage += 1;
+            $('#checkall').prop('checked', false);
             //alert(currentpage);
             excutionQuery(currentpage);
         });
         $('#previous').click(function () {
+            $('#checkall').prop('checked', false);
             currentpage -= 1;
             //alert(currentpage);
             $('#previous').attr('disabled', false);
@@ -715,6 +759,7 @@
                 setTimeout(function () {
                     arrMember = [];
                     //debugger;
+
                     $('#listmember').show();
                     $('#listmemberbody').empty();
                     $('#loadingmemberlist').hide();
@@ -747,7 +792,6 @@
             })
         });
     </script>
-
 
 </body>
 </html>
