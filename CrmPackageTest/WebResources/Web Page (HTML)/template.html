@@ -7,7 +7,7 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-    <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -194,14 +194,19 @@
             <div class="col-lg-6">
                 <div class="col-lg-12">
                     <div class="col-lg-12">
-                        <div class="right-inner-addon">
-                            <i id="btnsearch" class="icon-search"></i>
-                            <input id="txtsearch" type="text" class="form-control input-sm" placeholder="Search for records">
+                        <div class="col-lg-6">
+                            <div class="right-inner-addon">
+                                <i id="btnsearch" class="glyphicon glyphicon-search"></i>
+                                <div><input id="txtsearch" type="text" class="form-control input-sm" placeholder="Search for records"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-12">
                     <br>
+                </div>
+                <div class="col-lg-12">
+                    <h6 style="font-family:Segoe\000020UI,Arial,sans\00002Dserif;"><strong>Contact List</strong></h6>
                 </div>
                 <div class="col-lg-12">
                     <br>
@@ -227,7 +232,7 @@
                             <div class="circle"></div>
                         </div>
                         <div class="col-lg-8">
-                            <select style="border:none; font-weight:bold; width:250px; font-size:12px;" class="form-control" id="sel1" onchange="reloadGridSelected()"></select>
+                            <select style="border:none; font-family: Segoe\000020UI,Arial,sans\00002Dserif ; font-weight:bold; width:250px; font-size:12px;" class="form-control" id="sel1" onchange="reloadGridSelected()"></select>
                         </div>
                         <div class="col-lg-4">
                             <button style="margin-left:8px; width:127px;" class="btn btn-success" id="btnaddmember">Add Members</button>
@@ -244,7 +249,8 @@
                                         <td><a href="#">Telephone</a></td>
                                     </tr>
                                 </thead>
-                                <tbody id="append"></tbody>
+                                <tbody id="append">
+                                </tbody>
                             </table>
                         </div>
 
@@ -263,8 +269,12 @@
                     <br>
                 </div>
                 <div class="col-lg-12">
+                    <h6 style="font-family:Segoe\000020UI,Arial,sans\00002Dserif;"><strong>Pre-Selected List</strong></h6>
+                </div>
+                <div class="col-lg-12">
                     <br>
                 </div>
+                <button style="float:right; width:165px;" class="btn btn-danger" id="btnremove">Remove Members</button>
                 <div class="col-lg-12">
                     <div id="loadingmemberlist" class="loader">
                         <div class="circle"></div>
@@ -273,7 +283,6 @@
                         <div class="circle"></div>
                         <div class="circle"></div>
                     </div>
-                    <button style="float:right; width:165px;" class="btn btn-danger" id="btnremove">Remove Members</button>
                     <div class="col-lg-12">
                         <button style="background-color:white; height:5px; border:none;"></button>
                     </div>
@@ -382,6 +391,7 @@
                         // console.log(results);
                         $('#loading').hide();
                         $('#grid').show();
+                        //(results.length > 0) ? $('#noticelistmember').hide : $('#noticelistmember').show();
                     }
                     else {
                         //alert(this.statusText);
@@ -391,7 +401,7 @@
             req.send();
         }
 
-        //working here
+        
         function reloadGridSelected(result) {
             var x = document.getElementById('sel1').value;
             globalFetchXml = decodeXml(x);
@@ -479,7 +489,7 @@
         function bindingData(responsetext) {
             if (responsetext.length === 0) {
                 console.log("the length of array is 0");
-                //currentpage -= 1; - Phuong
+                //currentpage -= 1;
                 //excutionQuery(currentpage);
                 $('#notice').show();
                 //$('#next').attr('disabled', true);
@@ -489,10 +499,20 @@
                 $('#notice').hide();
                 $('#next').attr('disabled', false);
                 for (var i = 0; i < responsetext.length; i++) {
-                    $('#append').append('<tr id="' + responsetext[i].contactid + '"><td><input ' + 'class="' + 'checkBox" onclick="return OptionsSelected(this)" ' + checkboxIsChecked(responsetext[i].contactid) + ' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox"/></td><td>' + checkDataIsUndefinded(responsetext[i].fullname) + '</td><td>' + checkDataIsUndefinded(responsetext[i].telephone1) + '</td></tr>');
+                    $('#append').append('<tr class="subcheckbox" id="row' + responsetext[i].contactid + '" style="background-color: ' + checkRowIsHighlight(responsetext[i].contactid) + ';"><td><input ' + 'class="' + 'checkBox" onchange="return checkAllIsChecked(this)" onclick="return OptionsSelected(this)" ' + checkboxIsChecked(responsetext[i].contactid) + ' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox"/></td><td><a href="' + window.parent.Xrm.Page.context.getClientUrl() + '/main.aspx?etn=contact&pagetype=entityrecord&id={' + responsetext[i].contactid + '}">' + checkDataIsUndefinded(responsetext[i].fullname) + '</a></td><td>' + checkDataIsUndefinded(responsetext[i].telephone1) + '</td></tr>');
                 }
             }
 
+        }
+
+        function checkRowIsHighlight(id){
+            return (arrDat.includes(id) == true) ? "#b1d6f0" : "none";
+        }
+
+        function checkAllIsChecked(me) {
+            console.log($('.checkBox:checked').length);
+            ($('.checkBox:checked').length == $('.checkBox').length)? $('#checkall').prop('checked', true): $('#checkall').prop('checked', false);
+            
         }
 
         function bindingDataListMember(responsetext) {
@@ -505,8 +525,8 @@
                 //$('#nextlistmember').attr('disabled', false);
             }
 
-            for (var i = 0; i < responsetext.length; i++) {
-                $('#listmemberbody').append('<tr id="' + responsetext[i].id + '"><td><input ' + 'class="' + 'checkBoxMember" onclick="return OptionSelectedMember(this)" value="' + responsetext[i].name + '" id=' + responsetext[i].id + ' type="checkbox" class="checkboxclass"/></td><td>' + checkDataIsUndefinded(responsetext[i].name) + '</td><td>' + checkDataIsUndefinded(responsetext[i].email) + '</td></tr>');
+            for (var i = 0; i < responsetext.length; i++) {//working
+                $('#listmemberbody').append('<tr class="submembercheckbox" id="rowmember' + responsetext[i].id + '"><td><input ' + 'class="' + 'checkBoxMember" onclick="return OptionSelectedMember(this)" value="' + responsetext[i].name + '" id=' + responsetext[i].id + ' type="checkbox" class="checkboxclass"/></td><td>' + checkDataIsUndefinded(responsetext[i].name) + '</td><td>' + checkDataIsUndefinded(responsetext[i].email) + '</td></tr>');
             }
 
         }
@@ -515,7 +535,9 @@
             if (me.checked == true) {
                 arrMember.push(me.id);
                 console.log(arrMember);
+                $('#rowmember' + me.id + '').css('background-color', '#b1d6f0');
             } else if (me.checked == false) {
+                $('#rowmember' + me.id + '').removeAttr("style");
                 for (var i in arrMember) {
                     if (arrMember[i] == me.id) {
                         arrMember.splice(i, 1);
@@ -529,7 +551,9 @@
             if (me.checked == true) {
                 arrDat.push(me.id);
                 console.log(arrDat);
+                $('#row' + me.id + '').css('background-color', '#b1d6f0');
             } else if (me.checked == false) {
+                $('#row' + me.id + '').removeAttr("style");
                 for (var i in arrDat) {
                     if (arrDat[i] == me.id) {
                         arrDat.splice(i, 1);
@@ -615,6 +639,7 @@
             }
 
             return serializer.serializeToString(xmlDoc);
+            console.log(serializer.serializeToString(xmlDoc));
         }
 
         function checkboxIsChecked(id) {
@@ -625,6 +650,7 @@
         */
 
         $(document).ready(function () {
+           // $('checkall').attr('checked', false);
             $('#loadingmemberlist').hide();
             $('#notice').hide();
             $('#previous').attr('disabled', true);
@@ -663,7 +689,7 @@
             //excutionQuery(currentpage);
             $.when(excutionQuery(currentpage)).then(function () {
                 $('#checkall').change(function () {
-
+                    $('#checkall').is(':checked') ? $('.subcheckbox').css('background-color', '#b1d6f0') : $('.subcheckbox').removeAttr('style');
                     $('.checkBox').prop('checked', $(this).prop('checked'));
                     if ($('#checkall').is(':checked')) {
                         $('.checkBox').each(function () {
@@ -688,12 +714,7 @@
                         console.log(arrDat);
                     }
                 });
-                $("input[type='checkbox'].checkBox").change(function () {
-                    var a = $("input[type='checkbox'].checkBox");
-                    if (a.length == a.filter(":checked").length) {
-                        alert('all checked');
-                    }
-                });
+                //($('.checkBox:checked').length == $('.checkBox').length) ? $('#checkall').attr('checked', false) : $('#checkall').attr('checked', true);
             });
         });
         $('#btnaddmember').click(function (event) {
@@ -713,7 +734,8 @@
             else {
                 $('#listmember').show();
                 $('#loadingmemberlist').hide();
-                event.preventDefault()
+                alert("You must select one or more records before you can perform this action.");
+                event.preventDefault();
             }
         });
         var currentpage = 1;
@@ -723,9 +745,9 @@
             $('#checkall').prop('checked', false);
             //alert(currentpage);
             excutionQuery(currentpage);
+           
         });
         $('#previous').click(function () {
-            $('#checkall').prop('checked', false);
             currentpage -= 1;
             //alert(currentpage);
             $('#previous').attr('disabled', false);
@@ -746,31 +768,39 @@
             excutionQuery(currentpage);
         });
         $('#btnsearch').click(function () {
-            GetMembers()
-            excutionQuery(currentpage);
+            GetMembers();
             currentpage = 1;
+            excutionQuery(currentpage);
+            
         });
-        $('#btnremove').click(function () {
+        $('#btnremove').click(function (event) {
             $('#listmember').hide();
             $('#loadingmemberlist').show();
             console.log(arrMember);
-
-            $.when(removeMemberList(arrMember)).then(function () {
-                setTimeout(function () {
-                    arrMember = [];
-                    //debugger;
-
-                    $('#listmember').show();
-                    $('#listmemberbody').empty();
-                    $('#loadingmemberlist').hide();
-                    GetMembers(1);
-                }, 5000);
-            });
+            if (arrMember.length != 0) {
+                $.when(removeMemberList(arrMember)).then(function () {
+                    setTimeout(function () {
+                        arrMember = [];
+                        //debugger;
+                        $('#checkallmember').prop('checked', false);
+                        $('#listmember').show();
+                        $('#listmemberbody').empty();
+                        $('#loadingmemberlist').hide();
+                        GetMembers(1);
+                    }, 5000);
+                });
+            }
+            else {
+                $('#listmember').show();
+                $('#loadingmemberlist').hide();
+                alert("You must select one or more records before you can perform this action.");
+                event.preventDefault();
+            }
 
         });
         $.when(GetMembers(1)).then(function () {
             $('#checkallmember').click(function () {
-
+                $('#checkallmember').is(':checked') ? $('.submembercheckbox').css('background-color', '#b1d6f0') : $('.submembercheckbox').removeAttr('style');
                 $('.checkBoxMember').prop('checked', $(this).prop('checked'));
                 if ($('#checkallmember').is(':checked')) {
                     $('.checkBoxMember').each(function () {
@@ -784,12 +814,6 @@
                     console.log(arrMember);
                 }
             });
-
-            $(".checkBoxMember").change(function () {
-                if (!$(this).prop("checked")) {
-                    $("#checkallmember").prop("checked", false);
-                }
-            })
         });
     </script>
 
