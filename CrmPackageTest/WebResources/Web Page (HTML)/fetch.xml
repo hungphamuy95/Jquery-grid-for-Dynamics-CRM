@@ -1,0 +1,15 @@
+<fetch>
+  <entity name="contact" >
+    <attribute name="fullname" />
+    <attribute name="emailaddress1" alias="email" />
+    <attribute name="telephone1" alias="telephone" />
+    <link-entity name="account" from="accountid" to="parentcustomerid" link-type="inner" alias="Client" >
+      <attribute name="name" />
+    </link-entity>
+    <link-entity name="listmember" from="entityid" to="contactid" link-type="inner" alias="member" >
+      <filter>
+        <condition attribute="listid" operator="eq" value="01fae038-0407-49cc-b0c3-80dd5b668d5c" />
+      </filter>
+    </link-entity>
+  </entity>
+</fetch>

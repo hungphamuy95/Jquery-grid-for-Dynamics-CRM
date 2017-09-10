@@ -246,7 +246,7 @@
                                     <tr>
                                         <td><input type="checkbox" id="checkall"></td>
                                         <td><a href="#">Full Name</a></td>
-                                        <td><a href="#">Telephone</a></td>
+                                        <td><a href="#">Parent Cliene Name</a></td>
                                     </tr>
                                 </thead>
                                 <tbody id="append">
@@ -297,13 +297,15 @@
                         <tbody id="listmemberbody"></tbody>
                     </table>
                     <div id="noticelistmember" style="align-content:center;font-family:Segoe\000020UI,Arial,sans\00002Dserif; font-size:12px;">No Contact records are available in this view.</div>
-                    <div class="col-lg-9">&nbsp;</div>
+                    <div class="col-lg-9">&nbsp;</div><!--html here-->
+                    <div class="col-lg-3" id="divpaging"><button id="previousmember"><span class="glyphicon glyphicon-chevron-left" style="color:#0072c6; font-size:10px;"></span></button><span style="font-size:12px;" id="getpagemember"></span><button id="nextmember"><span class="glyphicon glyphicon-chevron-right" style="color:#0072c6; font-size:10px;"></span></button></div>
                 </div>
             </div>
         </div>
 
     </div>
     <script>
+        var currentmemberpage = 1;
         var arrDat = [];
         var arrMember = [];
         var currentpage = 1;
@@ -401,7 +403,6 @@
             req.send();
         }
 
-        
         function reloadGridSelected(result) {
             var x = document.getElementById('sel1').value;
             globalFetchXml = decodeXml(x);
@@ -424,25 +425,32 @@
 
             var listId = window.parent.Xrm.Page.data.entity.getId().replace("{", "").replace("}", "");
             var fetchXml =
-                        "<fetch top=\"50\">" +
-                            "<entity name=\"listmember\">" +
-                                "<filter>" +
-                                    "<condition attribute=\"listid\" operator=\"eq\" value=\"{listId}\" />" +
-                                "</filter>" +
-                                "<link-entity name=\"contact\" from=\"contactid\" to=\"entityid\" link-type=\"inner\" alias=\"Contact\" visible=\"true\" >" +
-                                    "<attribute name=\"contactid\" alias=\"id\" />" +
-                                    "<attribute name=\"fullname\" alias=\"name\" />" +
-                                    "<attribute name=\"emailaddress1\" alias=\"email\" />" +
+                        "<fetch page=\"{page}\" count=\"10\">" +
+                            "<entity name=\"contact\">" +
+                                "<attribute name=\"fullname\" />"+
+                                "<attribute name=\"parentcustomerid\" alias=\"parentid\" />" +
+                                "<order attribute=\"fullname\" descending=\"false\" />"+
+                                "<link-entity name=\"account\" from=\"accountid\" to=\"parentcustomerid\" link-type=\"outer\" visible=\"true\" >" +
+                                    "<attribute name=\"name\" alias=\"parentname\" />" +
+                                "</link-entity>" +
+                                "<link-entity name=\"listmember\" from=\"entityid\" to=\"contactid\" link-type=\"inner\" visible=\"true\" >" +
+                                    "<filter>" +
+                                        "<condition attribute=\"listid\" operator=\"eq\" value=\"{listId}\" />" +
+                                    "</filter>" +
                                 "</link-entity>" +
                             "</entity>" +
-                        "</fetch>";
-
+                        "</fetch>";            
+            if (page < 1)
+                page = 1;
+            fetchXml = fetchXml.replace("{page}", page);
             fetchXml = fetchXml.replace("{listId}", listId);
             //fetchXml = PrepareFetchXml(fetchXml, "", "", "", page);
-            getData("/api/data/v8.0/listmembers?fetchXml=", fetchXml, bindingDataListMember);
+            console.log(fetchXml);
+            $('#listmemberbody').empty();
+            getData("/api/data/v8.0/contacts?fetchXml=", fetchXml, bindingDataListMember);
             //getData("/api/data/v8.0/listmember?fetchXml=", fetchxml, bindingData);
-            $('#getpagelistmember').empty();
-            $('#getpagelistmember').append(' page ' + page + ' ');
+            $('#getpagemember').empty();
+            $('#getpagemember').append(' page ' + page + ' ');
             $('#nextlistmember').attr('disabled', true);
 
             //debugger;
@@ -471,14 +479,12 @@
             return (data === undefined) ? "" : data;
         }
 
-
-
         function excutionQuery(page) {
             //debugger;
             var keyword = $("#txtsearch").val();
             if (page < 1)
                 page = 1;
-            var fetchxml = PrepareFetchXml(decodeXml(globalFetchXml), keyword, "", "", page);
+            var fetchxml = PrepareFetchXml(decodeXml(globalFetchXml), keyword, "fullname", "false", page);
             $('#append').empty();
             getData("/api/data/v8.0/contacts?fetchXml=", fetchxml, bindingData);
             $('#getpage').empty();
@@ -499,7 +505,7 @@
                 $('#notice').hide();
                 $('#next').attr('disabled', false);
                 for (var i = 0; i < responsetext.length; i++) {
-                    $('#append').append('<tr class="subcheckbox" id="row' + responsetext[i].contactid + '" style="background-color: ' + checkRowIsHighlight(responsetext[i].contactid) + ';"><td><input ' + 'class="' + 'checkBox" onchange="return checkAllIsChecked(this)" onclick="return OptionsSelected(this)" ' + checkboxIsChecked(responsetext[i].contactid) + ' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox"/></td><td><a href="' + window.parent.Xrm.Page.context.getClientUrl() + '/main.aspx?etn=contact&pagetype=entityrecord&id={' + responsetext[i].contactid + '}">' + checkDataIsUndefinded(responsetext[i].fullname) + '</a></td><td>' + checkDataIsUndefinded(responsetext[i].telephone1) + '</td></tr>');
+                    $('#append').append('<tr class="subcheckbox" id="row' + responsetext[i].contactid + '" style="background-color: ' + checkRowIsHighlight(responsetext[i].contactid) + ';"><td><input ' + 'class="' + 'checkBox" onchange="return checkAllIsChecked(this)" onclick="return OptionsSelected(this)" ' + checkboxIsChecked(responsetext[i].contactid) + ' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox"/></td><td><a href="' + window.parent.Xrm.Page.context.getClientUrl() + '/cs/dialog/rundialog.aspx?DialogId={0F9A96B1-8D93-42BD-8065-156C30E2A252}&EntityName=contact&ObjectId={'+responsetext[i].contactid+'}">' + checkDataIsUndefinded(responsetext[i].fullname) + '</a></td><td><a href="#" onclick="openParentClient(' + responsetext[i]._parentcustomerid_value + ')">' + checkDataIsUndefinded(responsetext[i].parentname) + '</a></td></tr>');
                 }
             }
 
@@ -520,15 +526,20 @@
             if (responsetext.length == 0) {
                 //currentpage = -1;
                 $('#noticelistmember').show();
+                $('#nextmember').attr('disabled', true);
             } else {
                 $('#noticelistmember').hide();
                 //$('#nextlistmember').attr('disabled', false);
             }
 
-            for (var i = 0; i < responsetext.length; i++) {//working
-                $('#listmemberbody').append('<tr class="submembercheckbox" id="rowmember' + responsetext[i].id + '"><td><input ' + 'class="' + 'checkBoxMember" onclick="return OptionSelectedMember(this)" value="' + responsetext[i].name + '" id=' + responsetext[i].id + ' type="checkbox" class="checkboxclass"/></td><td>' + checkDataIsUndefinded(responsetext[i].name) + '</td><td>' + checkDataIsUndefinded(responsetext[i].email) + '</td></tr>');
+            for (var i = 0; i < responsetext.length; i++) {
+                $('#listmemberbody').append('<tr class="submembercheckbox" id="rowmember' + responsetext[i].contactid + '" style="background-color:'+checkRowMemberIsHighlight(responsetext[i].contactid)+'"><td><input ' + 'class="' + 'checkBoxMember" onclick="return OptionSelectedMember(this)" '+checkMemberIsChecked(responsetext[i].contactid)+' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox" class="checkboxclass"/></td><td>' + checkDataIsUndefinded(responsetext[i].fullname) + '</td><td>' + checkDataIsUndefinded(responsetext[i].parentname) + '</td></tr>');
             }
 
+        }
+
+        function checkRowMemberIsHighlight(id){
+            return (arrMember.includes(id) == true) ? "#b1d6f0" : "none";
         }
 
         function OptionSelectedMember(me) {
@@ -601,7 +612,7 @@
                 $fetch.attr("page", page);
             }
 
-            var columns = ["fullname", "telephone1"];
+            var columns = ["fullname", "parentcustomerid"];
             if (columns.length > 0) {
                 var $columns = $xml.find("attribute");
                 $columns.each(function () {
@@ -613,6 +624,12 @@
                     $xml.find("entity").append(attribute.replace("{columnName}", val));
                 });
             }
+            
+            var linkClientEntity = "<link-entity name=\"account\" from=\"accountid\" to=\"parentcustomerid\" link-type=\"outer\" visible=\"true\" >" +
+                                    "<attribute name=\"name\" alias=\"parentname\" />" +
+                                   "</link-entity>";
+
+            $xml.find("entity").append(linkClientEntity);
 
             if (keyword !== "") {
                 var $filter = $xml.find("filter");
@@ -626,6 +643,8 @@
                     $filter.append(condition);
                 }
             }
+
+
 
             if (orderColumn !== "") {
                 var $order = $xml.find("order");
@@ -645,6 +664,11 @@
         function checkboxIsChecked(id) {
             return (arrDat.includes(id) == true) ? "checked" : "";
         }
+
+        function checkMemberIsChecked(id) {
+            return (arrMember.includes(id) == true) ? "checked" : "";
+        }
+
         /*
         *-----------------------------------------------------------
         */
@@ -721,24 +745,28 @@
             $('#listmember').hide();
             $('#loadingmemberlist').show();
             $('#noticelistmember').hide();
+            $('#divpaging').hide();
             if (arrDat.length != 0) {
                 $.when(AddMemberToList(arrDat)).then(function () {
                     setTimeout(function () {
+                        debugger;
                         $('#listmember').show();
                         $('#listmemberbody').empty();
                         $('#loadingmemberlist').hide();
+                        $('#divpaging').show();
                         GetMembers(1);
                     }, 5000);
                 });
             }
             else {
+                $('#divpaging').show();
                 $('#listmember').show();
                 $('#loadingmemberlist').hide();
                 alert("You must select one or more records before you can perform this action.");
                 event.preventDefault();
             }
         });
-        var currentpage = 1;
+        //var currentpage = 1;
         $("#next").click(function () {
             $('#previous').attr('disabled', false);
             currentpage += 1;
@@ -747,6 +775,16 @@
             excutionQuery(currentpage);
            
         });
+
+        $("#nextmember").click(function () {
+            debugger;
+            $('#previousmember').attr('disabled', false);
+            currentmemberpage += 1;
+            console.log(currentmemberpage);
+            $('#checkallmember').prop('checked', false);
+            GetMembers(currentmemberpage);
+        });
+
         $('#previous').click(function () {
             currentpage -= 1;
             //alert(currentpage);
@@ -761,6 +799,21 @@
             }
 
         });
+        $("#previousmember").click(function () {
+            debugger;
+            currentmemberpage -=1;
+            console.log(currentmemberpage);
+            //$("#previousmember").attr('disabled', true);
+            if (currentmemberpage >= 1) {
+                GetMembers(currentmemberpage);
+                $("#previousmember").attr('disabled', false);
+                $("#nextmember").attr('disabled', false);
+            }
+            else if (currentmemberpage < 1) {
+                currentmemberpage = 1;
+                $("#previousmember").attr('disabled', true);
+            }
+        });
         $('#sel1').change(function () {
             arrDat = [];
             currentpage = 1;
@@ -768,7 +821,7 @@
             excutionQuery(currentpage);
         });
         $('#btnsearch').click(function () {
-            GetMembers();
+            //GetMembers();
             currentpage = 1;
             excutionQuery(currentpage);
             
@@ -776,6 +829,7 @@
         $('#btnremove').click(function (event) {
             $('#listmember').hide();
             $('#loadingmemberlist').show();
+            $('#divpaging').hide();
             console.log(arrMember);
             if (arrMember.length != 0) {
                 $.when(removeMemberList(arrMember)).then(function () {
@@ -786,11 +840,13 @@
                         $('#listmember').show();
                         $('#listmemberbody').empty();
                         $('#loadingmemberlist').hide();
+                        $('#divpaging').show();
                         GetMembers(1);
                     }, 5000);
                 });
             }
             else {
+                $('#divpaging').show();
                 $('#listmember').show();
                 $('#loadingmemberlist').hide();
                 alert("You must select one or more records before you can perform this action.");
@@ -798,6 +854,7 @@
             }
 
         });
+        //MEMBER HERE
         $.when(GetMembers(1)).then(function () {
             $('#checkallmember').click(function () {
                 $('#checkallmember').is(':checked') ? $('.submembercheckbox').css('background-color', '#b1d6f0') : $('.submembercheckbox').removeAttr('style');
@@ -816,6 +873,5 @@
             });
         });
     </script>
-
 </body>
 </html>
