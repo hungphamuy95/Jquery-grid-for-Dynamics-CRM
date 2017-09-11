@@ -18,7 +18,7 @@
         ::-webkit-input-placeholder {
             font-style: italic;
             font-family: Segoe\000020UI,Tahoma,Arial;
-            font-size: 14px;
+            font-size: 12px;
             color: rgb(102, 102, 102);
         }
 
@@ -235,7 +235,7 @@
                             <select style="border:none; font-family: Segoe\000020UI,Arial,sans\00002Dserif ; font-weight:bold; width:250px; font-size:12px;" class="form-control" id="sel1" onchange="reloadGridSelected()"></select>
                         </div>
                         <div class="col-lg-4">
-                            <button style="margin-left:8px; width:127px;" class="btn btn-success" id="btnaddmember">Add Members</button>
+                            <button style="margin-left:8px; width:127px; font-family:Segoe\000020UI,Arial,sans\00002Dserif; font-size:12px;" class="btn btn-success" id="btnaddmember">Add Members</button>
                         </div>
                         <div class="col-lg-12">
                             <button style="background-color:white; height:5px; border:none;"></button>
@@ -246,11 +246,10 @@
                                     <tr>
                                         <td><input type="checkbox" id="checkall"></td>
                                         <td><a href="#">Full Name</a></td>
-                                        <td><a href="#">Parent Cliene Name</a></td>
+                                        <td><a href="#">Parent Client Name</a></td>
                                     </tr>
                                 </thead>
-                                <tbody id="append">
-                                </tbody>
+                                <tbody id="append"></tbody>
                             </table>
                         </div>
 
@@ -274,7 +273,7 @@
                 <div class="col-lg-12">
                     <br>
                 </div>
-                <button style="float:right; width:165px;" class="btn btn-danger" id="btnremove">Remove Members</button>
+                <button style="float:right; width:165px; font-family:Segoe\000020UI,Arial,sans\00002Dserif; font-size:12px;" class="btn btn-danger" id="btnremove">Remove Members</button>
                 <div class="col-lg-12">
                     <div id="loadingmemberlist" class="loader">
                         <div class="circle"></div>
@@ -291,7 +290,7 @@
                             <tr>
                                 <td><input type="checkbox" id="checkallmember"></td>
                                 <td><a href="#">Full Name</a></td>
-                                <td><a href="#">Email</a></td>
+                                <td><a href="#">Parent Client Name</a></td>
                             </tr>
                         </thead>
                         <tbody id="listmemberbody"></tbody>
@@ -373,7 +372,7 @@
         }
 
         function getData(url, fetchXml, callback) {
-            console.log("get view function");
+            //console.log("get view function");
             var encodedFetchXml = encodeURI(fetchXml);
             var queryPath = url + encodedFetchXml;
             var requestPath = window.parent.Xrm.Page.context.getClientUrl() + queryPath;
@@ -439,7 +438,7 @@
                                     "</filter>" +
                                 "</link-entity>" +
                             "</entity>" +
-                        "</fetch>";            
+                        "</fetch>";
             if (page < 1)
                 page = 1;
             fetchXml = fetchXml.replace("{page}", page);
@@ -494,18 +493,18 @@
 
         function bindingData(responsetext) {
             if (responsetext.length === 0) {
-                console.log("the length of array is 0");
+                //console.log("the length of array is 0");
                 //currentpage -= 1;
                 //excutionQuery(currentpage);
                 $('#notice').show();
                 //$('#next').attr('disabled', true);
             }
             else {
-                console.log("the length of array is not 0");
+                //console.log("the length of array is not 0");
                 $('#notice').hide();
                 $('#next').attr('disabled', false);
                 for (var i = 0; i < responsetext.length; i++) {
-                    $('#append').append('<tr class="subcheckbox" id="row' + responsetext[i].contactid + '" style="background-color: ' + checkRowIsHighlight(responsetext[i].contactid) + ';"><td><input ' + 'class="' + 'checkBox" onchange="return checkAllIsChecked(this)" onclick="return OptionsSelected(this)" ' + checkboxIsChecked(responsetext[i].contactid) + ' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox"/></td><td><a href="' + window.parent.Xrm.Page.context.getClientUrl() + '/cs/dialog/rundialog.aspx?DialogId={0F9A96B1-8D93-42BD-8065-156C30E2A252}&EntityName=contact&ObjectId={'+responsetext[i].contactid+'}">' + checkDataIsUndefinded(responsetext[i].fullname) + '</a></td><td><a href="#" onclick="openParentClient(' + responsetext[i]._parentcustomerid_value + ')">' + checkDataIsUndefinded(responsetext[i].parentname) + '</a></td></tr>');
+                    $('#append').append('<tr class="subcheckbox" id="row' + responsetext[i].contactid + '" style="background-color: ' + checkRowIsHighlight(responsetext[i].contactid) + ';"><td><input ' + 'class="' + 'checkBox" onchange="return checkAllIsChecked(this)" onclick="return OptionsSelected(this)" ' + checkboxIsChecked(responsetext[i].contactid) + ' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox"/></td><td><a href="' + window.parent.Xrm.Page.context.getClientUrl() + '/main.aspx?etn=contact&pagetype=entityrecord&id={' + responsetext[i].contactid + '}" target="_blank">' + checkDataIsUndefinded(responsetext[i].fullname) + '</a></td><td><a href="' + window.parent.Xrm.Page.context.getClientUrl() + '/main.aspx?etn=account&pagetype=entityrecord&id={' + responsetext[i]._parentcustomerid_value + '}" target="_blank">' + checkDataIsUndefinded(responsetext[i].parentname) + '</a</td></tr>');
                 }
             }
 
@@ -518,7 +517,7 @@
         function checkAllIsChecked(me) {
             console.log($('.checkBox:checked').length);
             ($('.checkBox:checked').length == $('.checkBox').length)? $('#checkall').prop('checked', true): $('#checkall').prop('checked', false);
-            
+
         }
 
         function bindingDataListMember(responsetext) {
@@ -533,7 +532,7 @@
             }
 
             for (var i = 0; i < responsetext.length; i++) {
-                $('#listmemberbody').append('<tr class="submembercheckbox" id="rowmember' + responsetext[i].contactid + '" style="background-color:'+checkRowMemberIsHighlight(responsetext[i].contactid)+'"><td><input ' + 'class="' + 'checkBoxMember" onclick="return OptionSelectedMember(this)" '+checkMemberIsChecked(responsetext[i].contactid)+' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox" class="checkboxclass"/></td><td>' + checkDataIsUndefinded(responsetext[i].fullname) + '</td><td>' + checkDataIsUndefinded(responsetext[i].parentname) + '</td></tr>');
+                $('#listmemberbody').append('<tr class="submembercheckbox" id="rowmember' + responsetext[i].contactid + '" style="background-color:' + checkRowMemberIsHighlight(responsetext[i].contactid) + '"><td><input ' + 'class="' + 'checkBoxMember" onclick="return OptionSelectedMember(this)" ' + checkMemberIsChecked(responsetext[i].contactid) + ' value="' + responsetext[i].fullname + '" id=' + responsetext[i].contactid + ' type="checkbox" class="checkboxclass"/></td><td><a href="' + window.parent.Xrm.Page.context.getClientUrl() + '/main.aspx?etn=contact&pagetype=entityrecord&id={' + responsetext[i].contactid + '}" target="_blank">' + checkDataIsUndefinded(responsetext[i].fullname) + '</a></td><td><a href="' + window.parent.Xrm.Page.context.getClientUrl() + '/main.aspx?etn=account&pagetype=entityrecord&id={' + responsetext[i].parentid + '}" target="_blank">' + checkDataIsUndefinded(responsetext[i].parentname) + '</a></td></tr>');
             }
 
         }
@@ -624,7 +623,7 @@
                     $xml.find("entity").append(attribute.replace("{columnName}", val));
                 });
             }
-            
+
             var linkClientEntity = "<link-entity name=\"account\" from=\"accountid\" to=\"parentcustomerid\" link-type=\"outer\" visible=\"true\" >" +
                                     "<attribute name=\"name\" alias=\"parentname\" />" +
                                    "</link-entity>";
@@ -749,11 +748,14 @@
             if (arrDat.length != 0) {
                 $.when(AddMemberToList(arrDat)).then(function () {
                     setTimeout(function () {
-                        debugger;
+                        //debugger;
                         $('#listmember').show();
                         $('#listmemberbody').empty();
                         $('#loadingmemberlist').hide();
                         $('#divpaging').show();
+                        $('#nextmember').attr('disabled', false);
+                        $('.checkBox').prop('checked', false);
+                        $('.checkBox').removeAttr('style');
                         GetMembers(1);
                     }, 5000);
                 });
@@ -773,16 +775,26 @@
             $('#checkall').prop('checked', false);
             //alert(currentpage);
             excutionQuery(currentpage);
-           
+
         });
 
         $("#nextmember").click(function () {
-            debugger;
             $('#previousmember').attr('disabled', false);
             currentmemberpage += 1;
             console.log(currentmemberpage);
             $('#checkallmember').prop('checked', false);
-            GetMembers(currentmemberpage);
+            $('#listmember').hide();
+            $('#loadingmemberlist').show();
+            $('#noticelistmember').hide();
+            $('#divpaging').hide();
+            setTimeout(function () {
+                $('#listmember').show();
+                $('#listmemberbody').empty();
+                $('#loadingmemberlist').hide();
+                $('#divpaging').show();
+                GetMembers(currentmemberpage);
+            },3000);
+            
         });
 
         $('#previous').click(function () {
@@ -805,7 +817,18 @@
             console.log(currentmemberpage);
             //$("#previousmember").attr('disabled', true);
             if (currentmemberpage >= 1) {
-                GetMembers(currentmemberpage);
+                $('#listmember').hide();
+                $('#loadingmemberlist').show();
+                $('#noticelistmember').hide();
+                $('#divpaging').hide();
+                setTimeout(function () {
+                    $('#listmember').show();
+                    $('#listmemberbody').empty();
+                    $('#loadingmemberlist').hide();
+                    $('#divpaging').show();
+                    GetMembers(currentmemberpage);
+                }, 3000);
+                
                 $("#previousmember").attr('disabled', false);
                 $("#nextmember").attr('disabled', false);
             }
@@ -824,7 +847,7 @@
             //GetMembers();
             currentpage = 1;
             excutionQuery(currentpage);
-            
+
         });
         $('#btnremove').click(function (event) {
             $('#listmember').hide();
