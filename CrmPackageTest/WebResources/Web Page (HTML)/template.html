@@ -15,6 +15,10 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style>
+        a {
+            color: #E90301;
+        }
+
         ::-webkit-input-placeholder {
             font-style: italic;
             font-family: Segoe\000020UI,Tahoma,Arial;
@@ -206,9 +210,6 @@
                     <br>
                 </div>
                 <div class="col-lg-12">
-                    <h6 style="font-family:Segoe\000020UI,Arial,sans\00002Dserif;"><strong>Contact List</strong></h6>
-                </div>
-                <div class="col-lg-12">
                     <br>
                 </div>
 
@@ -231,6 +232,9 @@
                             <div class="circle"></div>
                             <div class="circle"></div>
                         </div>
+                        <div class="col-lg-12">
+                            <h6 style="font-family:Segoe\000020UI,Arial,sans\00002Dserif;"><strong>Contact List</strong></h6>
+                        </div>
                         <div class="col-lg-8">
                             <select style="border:none; font-family: Segoe\000020UI,Arial,sans\00002Dserif ; font-weight:bold; width:250px; font-size:12px;" class="form-control" id="sel1" onchange="reloadGridSelected()"></select>
                         </div>
@@ -245,16 +249,16 @@
                                 <thead id="maintable">
                                     <tr>
                                         <td><input type="checkbox" id="checkall"></td>
-                                        <td><a href="#">Full Name</a></td>
-                                        <td><a href="#">Parent Client Name</a></td>
+                                        <td id="demo1"><a id="text1" style="color:#444444;" href="#">Full Name</a></td>
+                                        <td id="demo2"><a id="text2" style="color:#444444;" href="#">Parent Client Name</a></td>
                                     </tr>
                                 </thead>
                                 <tbody id="append"></tbody>
                             </table>
+                            <div id="notice" style="align-content:center;font-family:Segoe\000020UI,Arial,sans\00002Dserif; font-size:12px;">No Contact records are available in this view.</div>
                         </div>
 
                     </div>
-                    <div id="notice" style="align-content:center;font-family:Segoe\000020UI,Arial,sans\00002Dserif; font-size:12px;">No Contact records are available in this view.</div>
                     <div class="col-lg-9">&nbsp;</div>
                     <div class="col-lg-3"><button id="previous"><span class="glyphicon glyphicon-chevron-left" style="color:#0072c6; font-size:10px;"></span></button><span style="font-size:12px;" id="getpage"></span><button id="next"><span class="glyphicon glyphicon-chevron-right" style="color:#0072c6; font-size:10px;"></span></button></div>
                 </div>
@@ -268,10 +272,10 @@
                     <br>
                 </div>
                 <div class="col-lg-12">
-                    <h6 style="font-family:Segoe\000020UI,Arial,sans\00002Dserif;"><strong>Pre-Selected List</strong></h6>
+                    <br>
                 </div>
                 <div class="col-lg-12">
-                    <br>
+                    <h6 style="font-family:Segoe\000020UI,Arial,sans\00002Dserif;"><strong>Pre-Selected List</strong></h6>
                 </div>
                 <button style="float:right; width:165px; font-family:Segoe\000020UI,Arial,sans\00002Dserif; font-size:12px;" class="btn btn-danger" id="btnremove">Remove Members</button>
                 <div class="col-lg-12">
@@ -289,8 +293,8 @@
                         <thead id="mainlistmembertable">
                             <tr>
                                 <td><input type="checkbox" id="checkallmember"></td>
-                                <td><a href="#">Full Name</a></td>
-                                <td><a href="#">Parent Client Name</a></td>
+                                <td id="demo3"><a id="text3" style="color:#444444;" href="#">Full Name</a></td>
+                                <td id="demo4"><a id="text4" style="color:#444444;" href="#">Parent Client Name</a></td>
                             </tr>
                         </thead>
                         <tbody id="listmemberbody"></tbody>
@@ -674,6 +678,64 @@
 
         $(document).ready(function () {
            // $('checkall').attr('checked', false);
+
+            //sorting
+            var count1 = 0;
+            var count2 = 0;
+            var count3 = 0;
+            var count4 = 0;
+            $("#demo1").click(function () {
+                count1++;
+                count2 = 0;
+                if (count1 % 2 == 1) {
+                    $("#text1").html('<a style="color:#444444;" href="#">Full Name  </a><img src="https://i.imgur.com/ddPVUkf.png" />');
+                    $("#text2").html('<a style="color:#444444;" href="#">Parent Client Name  </a>');
+                }
+                else {
+                    $("#text1").html('<a style="color:#444444;" href="#">Full Name  </a><img src="https://i.imgur.com/qVbB3J0.png" />');
+                    $("#text2").html('<a style="color:#444444;" href="#">Parent Client Name  </a>');
+                }
+            });
+
+            $("#demo2").click(function () {
+                count2++;
+                count1 = 0;
+                if (count2 % 2 == 1) {
+                    $("#text2").html('<a style="color:#444444;" href="#">Parent Client Name  </a><img src="https://i.imgur.com/ddPVUkf.png" />');
+                    $("#text1").html('<a style="color:#444444;" href="#">Full Name  </a>');
+                }
+                else {
+                    $("#text2").html('<a style="color:#444444;" href="#">Parent Client Name  </a><img src="https://i.imgur.com/qVbB3J0.png" />');
+                    $("#text1").html('<a style="color:#444444;" href="#">Full Name  </a>');
+                }
+            });
+
+            $("#demo3").click(function () {
+                count3++;
+                count4 = 0;
+                if (count3 % 2 == 1) {
+                    $("#text3").html('<a style="color:#444444;" href="#">Full Name  </a><img src="https://i.imgur.com/ddPVUkf.png" />');
+                    $("#text4").html('<a style="color:#444444;" href="#">Parent Client Name  </a>');
+                }
+                else {
+                    $("#text3").html('<a style="color:#444444;" href="#">Full Name  </a><img src="https://i.imgur.com/qVbB3J0.png" />');
+                    $("#text4").html('<a style="color:#444444;" href="#">Parent Client Name  </a>');
+                }
+            });
+
+            $("#demo4").click(function () {
+                count4++;
+                count3 = 0;
+                if (count4 % 2 == 1) {
+                    $("#text4").html('<a style="color:#444444;" href="#">Parent Client Name  </a><img src="https://i.imgur.com/ddPVUkf.png" />');
+                    $("#text3").html('<a style="color:#444444;" href="#">Full Name  </a>');
+                }
+                else {
+                    $("#text4").html('<a style="color:#444444;" href="#">Parent Client Name  </a><img src="https://i.imgur.com/qVbB3J0.png" />');
+                    $("#text3").html('<a style="color:#444444;" href="#">Full Name  </a>');
+                }
+            });
+
             $('#loadingmemberlist').hide();
             $('#notice').hide();
             $('#previous').attr('disabled', true);
@@ -756,6 +818,9 @@
                         $('#nextmember').attr('disabled', false);
                         $('.checkBox').prop('checked', false);
                         $('.checkBox').removeAttr('style');
+                        $('.checkBox').prop('checked', false);
+                        $('.subcheckbox').removeAttr("style");
+                        $('#checkall').prop('checked', false);
                         GetMembers(1);
                     }, 5000);
                 });
@@ -794,7 +859,7 @@
                 $('#divpaging').show();
                 GetMembers(currentmemberpage);
             },3000);
-            
+
         });
 
         $('#previous').click(function () {
@@ -828,7 +893,7 @@
                     $('#divpaging').show();
                     GetMembers(currentmemberpage);
                 }, 3000);
-                
+
                 $("#previousmember").attr('disabled', false);
                 $("#nextmember").attr('disabled', false);
             }
