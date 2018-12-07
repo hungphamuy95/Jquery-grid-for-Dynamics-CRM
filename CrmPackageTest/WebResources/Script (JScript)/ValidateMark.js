@@ -1,4 +1,4 @@
-/// <reference path="https://rawgit.com/hungphamuy95/Dynamic-CRM-CRUD/master/Sample/Scripts/XRM.js" />
+/// <reference path="https://cdn.jsdelivr.net/gh/hungphamuy95/Dynamic-CRM-CRUD/Sample/Scripts/XRM.js" />
 Xrm.Page.data.entity.getId();
 
 try {
